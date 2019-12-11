@@ -1,0 +1,8 @@
+nodes:
+  hosts:
+    odroid16:
+      label: odroid16
+      ansible_host: 192.168.137.119
+      ansible_user: root
+      ansible_ssh_pass: odroid
+      architecture: armhf
