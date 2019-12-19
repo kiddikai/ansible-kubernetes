@@ -12,6 +12,7 @@
       hostname:
         name: "{{ label }}"
 
+      # patch /boot/firmware/cmdline.txt
     - name: Check kernel command line parameters (cgroup memory)
       shell: cat /boot/firmware/cmdline.txt | grep cgroup_memory=1 | wc -l
       args:
@@ -25,12 +26,28 @@
         line: '\1 cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1'
         backrefs: yes
       when: lineExists.stdout == '0'
-      become: yes
       ignore_errors: yes
 
+      # patch /boot/cmdline.txt
+    - name: Check kernel command line parameters (cgroup memory)
+      shell: cat /boot/cmdline.txt | grep cgroup_memory=1 | wc -l
+      args:
+        warn: no
+      register: lineExists2
+
+    - name: Fix kernel command line parameters (cgroup memory)
+      lineinfile:
+        path: /boot/cmdline.txt
+        regexp: '^(.+)$'
+        line: '\1 cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1'
+        backrefs: yes
+      when: lineExists2.stdout == '0'
+      ignore_errors: yes
+
+      # Unsinn - rebootet IMMER
     - name: Reboot
       reboot:
-      when: lineExists.stdout == '0'
+      when: lineExists.stdout == '0' or  lineExists2.stdout == '0'
 
     - name: Check if Docker is installed
       command: which docker
