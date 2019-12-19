@@ -1,8 +1,26 @@
 nodes:
+  vars:
+    ipPrefix: 192.168.178.
   hosts:
     odroid16:
       label: odroid16
-      ansible_host: 192.168.137.119
+      ansible_host: "{{ ipPrefix }}116"
       ansible_user: root
-      ansible_ssh_pass: odroid
+      architecture: armhf
+      vars:
+        master: yes
+    raspi1:
+      label: raspi1
+      ansible_host: "{{ ipPrefix }}101"
+      ansible_user: raspi
+      architecture: armhf
+    raspi2:
+      label: raspi2
+      ansible_host: "{{ ipPrefix }}102"
+      ansible_user: ubuntu
+      architecture: arm64
+    raspi3:
+      label: raspi3
+      ansible_host: "{{ ipPrefix }}103"
+      ansible_user: pi
       architecture: armhf

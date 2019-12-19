@@ -1,47 +1,51 @@
 ---
 - hosts: all
-  become: true
+  become: yes
   tasks:
+    - name: Update and upgrade apt packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 1
+
     - name: Set hostname
       hostname:
         name: "{{ label }}"
 
-    - name: Install packages that allow apt to be used over HTTPS
-      apt:
-        name: "{{ packages }}"
-        state: present
-        update_cache: yes
-      vars:
-        packages:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg-agent
-          - software-properties-common
+    - name: Check kernel command line parameters (cgroup memory)
+      shell: cat /boot/firmware/cmdline.txt | grep cgroup_memory=1 | wc -l
+      args:
+        warn: no
+      register: lineExists
 
-    - name: Add an apt signing key for Docker
-      apt_key:
-        url: https://download.docker.com/linux/ubuntu/gpg
-        state: present
+    - name: Fix kernel command line parameters (cgroup memory)
+      lineinfile:
+        path: /boot/firmware/cmdline.txt
+        regexp: '^(.+)$'
+        line: '\1 cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1'
+        backrefs: yes
+      when: lineExists.stdout == '0'
+      become: yes
+      ignore_errors: yes
 
-    - name: Set the stable docker repository
-      apt_repository:
-        repo: "deb [arch={{ architecture }}] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} edge"
-        state: present
-        update_cache: yes
+    - name: Reboot
+      reboot:
+      when: lineExists.stdout == '0'
 
-    - name: Install docker and its dependencies
-      apt:
-        name: "{{ packages }}"
-        state: present
-        update_cache: yes
-      vars:
-        packages:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
-      notify:
-        - docker status
+    - name: Check if Docker is installed
+      command: which docker
+      register: whichDocker
+      ignore_errors: yes
+
+    - name: Get Docker install script
+      command:
+        cmd: curl -fsSL get.docker.com -o get-docker.sh
+      when: whichDocker.failed == true
+
+    - name: Install Docker
+      command:
+        cmd: sh get-docker.sh
+      when: whichDocker.failed == true
 
     - name: Remove swapfile from /etc/fstab
       mount:
@@ -90,41 +94,22 @@
         daemon_reload: yes
         state: restarted
 
-    - name: Delete leftovers of a previous kubeadm init
-      file:
-        path: "{{ item }}"
-        state: absent
-      with_items:
-        - /etc/kubernetes/manifests/kube-apiserver.yaml
-        - /etc/kubernetes/manifests/kube-controller-manager.yaml
-        - /etc/kubernetes/manifests/kube-scheduler.yaml
-        - /etc/kubernetes/manifests/etcd.yaml
-        - /etc/kubernetes/admin.conf
-        - /etc/kubernetes/kubelet.conf
-        - /etc/kubernetes/controller-manager.conf
-        - /etc/kubernetes/scheduler.conf
+    - name: Reset Kubernetes cluster
+      command: kubeadm reset -f
 
     - name: Initialize the Kubernetes cluster using kubeadm
-      command: kubeadm init --apiserver-advertise-address="192.168.0.50" --apiserver-cert-extra-sans="192.168.0.50"  --node-name k8s-master --pod-network-cidr=192.168.0.0/16
-#      command: kubeadm init --apiserver-advertise-address="{{ ansible_host }}" --apiserver-cert-extra-sans="{{ ansible_host }}"  --node-name k8s-master --pod-network-cidr=192.168.0.0/16
+      command: kubeadm init --pod-network-cidr=192.168.0.0/16
 
-    #    - name: Setup kubeconfig for vagrant user
-    #        command: "{{ item }}"
-    #        with_items:
-    #          - mkdir -p /home/vagrant/.kube
-    #          - cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
-    #          - chown vagrant:vagrant /home/vagrant/.kube/config
+#    - name: Install calico pod network
+#      become: false
+#      command: kubectl create -f https://docs.projectcalico.org/v3.4/getting-started/kubernetes/installation/hosted/calico.yaml
 
-    - name: Install calico pod network
-      become: false
-      command: kubectl create -f https://docs.projectcalico.org/v3.4/getting-started/kubernetes/installation/hosted/calico.yaml
-
-    - name: Generate join command
-      command: kubeadm token create --print-join-command
-      register: join_command
-
-    - name: Copy join command to local file
-      local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+#    - name: Generate join command
+#      command: kubeadm token create --print-join-command
+#      register: join_command
+#
+#    - name: Copy join command to local file
+#      local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
 
   handlers:
     - name: docker status
