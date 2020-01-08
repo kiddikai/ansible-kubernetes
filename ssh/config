@@ -3,12 +3,12 @@ Host odroid16
   User root
 
 Host raspi1
-  HostNAme 192.168.178.101
-  User raspi1
+  HostName 192.168.178.101
+  User pi
 
 Host raspi2
   HostName 192.168.178.102
-  User ubuntu
+  User pi
 
 Host raspi3
   HostName 192.168.178.103
