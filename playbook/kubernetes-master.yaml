@@ -2,6 +2,10 @@
 - hosts: all
   become: yes
   tasks:
+    - name: Set master flag
+      set_fact: master=yes
+      when: ansible_host == masterIp
+
     - name: Update and upgrade apt packages
       apt:
         upgrade: yes
@@ -44,11 +48,6 @@
       when: lineExists2.stdout == '0'
       ignore_errors: yes
 
-      # Unsinn - rebootet IMMER
-    - name: Reboot
-      reboot:
-      when: lineExists.stdout == '0' or  lineExists2.stdout == '0'
-
     - name: Check if Docker is installed
       command: which docker
       register: whichDocker
@@ -64,6 +63,11 @@
         cmd: sh get-docker.sh
       when: whichDocker.failed == true
 
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+
     - name: Remove swapfile from /etc/fstab
       mount:
         name: "{{ item }}"
@@ -73,9 +77,14 @@
         - swap
         - none
 
+      # Unsinn - rebootet IMMER
+#    - name: Reboot
+#      reboot:
+#      when: lineExists.stdout == '0' or  lineExists2.stdout == '0'
+
+    # Überlebt keinen Reboot
     - name: Disable swap
       command: swapoff -a
-      when: ansible_swaptotal_mb > 0
 
     - name: Add an apt signing key for Kubernetes
       apt_key:
@@ -99,11 +108,11 @@
           - kubeadm
           - kubectl
 
-    - name: Configure node ip
-      lineinfile:
-        path: /etc/default/kubelet
-        line: KUBELET_EXTRA_ARGS=--node-ip={{ ansible_host }}
-        create: yes
+#    - name: Configure node ip
+#      lineinfile:
+#        path: /etc/default/kubelet
+#        line: KUBELET_EXTRA_ARGS=--node-ip={{ ansible_host }}
+#        create: yes
 
     - name: Restart kubelet
       service:
@@ -116,18 +125,29 @@
 
     - name: Initialize the Kubernetes cluster using kubeadm
       command: kubeadm init --pod-network-cidr=192.168.0.0/16
+      when: master is defined
 
-#    - name: Install calico pod network
-#      become: false
-#      command: kubectl create -f https://docs.projectcalico.org/v3.4/getting-started/kubernetes/installation/hosted/calico.yaml
+  #    - name: Install calico pod network
+  #      become: false
+  #      command: kubectl create -f https://docs.projectcalico.org/v3.4/getting-started/kubernetes/installation/hosted/calico.yaml
 
-#    - name: Generate join command
-#      command: kubeadm token create --print-join-command
-#      register: join_command
-#
-#    - name: Copy join command to local file
-#      local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+    - name: Generate join command
+      command: kubeadm token create --print-join-command
+      register: join_command
+      when: master is defined
 
-  handlers:
-    - name: docker status
-      service: name=docker state=started
+    - name: Copy join command to local file
+      become: no
+      local_action:
+        module: copy
+        content: "{{ join_command.stdout_lines[0] }}"
+        dest: /tmp/join-command
+      when: master is defined
+
+    - name: Copy the join command to server location
+      copy: src=/tmp/join-command dest=/tmp/join-command.sh mode=0777
+      when: master is not defined
+
+    - name: Join the node to cluster
+      command: sh /tmp/join-command.sh
+      when: master is not defined
