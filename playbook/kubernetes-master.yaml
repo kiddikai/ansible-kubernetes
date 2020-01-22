@@ -104,6 +104,21 @@
       command: kubeadm init --pod-network-cidr=192.168.0.0/16
       when: master is defined
 
+    - name: Create .kube directory
+      become: no
+      file:
+        path: /home/{{ ansible_user }}/.kube
+        state: directory
+      when: master is defined
+
+    - name: Copy kubernetes config to home directory
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/{{ ansible_user }}/.kube/config
+        remote_src: yes
+        owner: "{{ ansible_user }}"
+      when: master is defined
+
     # Join Kubernetes nodes
     - name: Generate join command
       command: kubeadm token create --print-join-command
@@ -125,3 +140,8 @@
     - name: Join the node to cluster
       command: sh /tmp/join-command.sh
       when: master is not defined
+
+    - name: Install Flannel pod network
+      become: false
+      command:  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+      when: master is defined
