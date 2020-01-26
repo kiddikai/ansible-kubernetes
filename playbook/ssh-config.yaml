@@ -1,0 +1,37 @@
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    configPath: ~/.ssh/k8s-config
+  tasks:
+    - name: empty ssh_config directory
+      delegate_to: localhost
+      run_once: yes
+      file:
+        state: "{{ item }}"
+        path: "{{ configPath }}"
+      with_items:
+        - absent
+        - directory
+
+    - name: Create ssh config files
+      local_action:
+        module: lineinfile
+        path: "{{ configPath }}/{{ inventory_hostname }}"
+        create: yes
+        mode: 0640
+        line: "{{ item }}"
+      with_items:
+        - "Host {{ inventory_hostname }}"
+        - "  HostName {{ ansible_host }}"
+        - "  User {{ ansible_user }}"
+
+    - name: Include config files in main config
+      delegate_to: localhost
+      run_once: yes
+      lineinfile:
+        path: ~/.ssh/config
+        insertbefore: BOF
+        line: "Include \"{{ configPath }}/*\""
+        create: yes
+        mode: 0640
