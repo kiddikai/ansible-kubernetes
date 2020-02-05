@@ -1,0 +1,289 @@
+%% LyX 2.3.3 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[oneside,english,a4paper,11pt,final,DIV13,BCOR20mm,openbib,openright,onecolumn,pagesize,pointlessnumbers,bibtotoc,liststotoc,idxtotoc,bigheadings,titlepage,tocindent,intoc,pdftex,utf8]{scrbook}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\NeedsTeXFormat{LaTeX2e}
+%\documentclass[a4paper,11pt,final,DIV13,BCOR20mm,openbib,twoside, openright,onecolumn,pagesize,pointlessnumbers,bibtotoc,liststotoc,idxtotoc,
+%	bigheadings,titlepage,tocindent,intoc,pdftex]{scrbook}
+\usepackage{emptypage}
+\usepackage[ngerman]{babel}
+%\usepackage[utf8]{inputenc}
+%\usepackage[ansinew]{inputenc}
+%\usepackage{blindtext}
+%\usepackage[T1]{fontenc}
+%\usepackage{bibgerm}
+%\usepackage{lmodern}
+%\usepackage{url}
+%\usepackage{microtype}
+%\usepackage{tabularx}
+%\usepackage{xcolor}
+%\usepackage[pdftex]{graphicx}
+%\usepackage{amsmath}
+
+%\usepackage{amsthm}
+%\usepackage{amssymb}
+%\usepackage{pdfpages}
+%%\usepackage{subfig}
+%\usepackage{subfigure}
+%\usepackage{rotating}
+%\usepackage{nextpage}
+%\usepackage[numbers,sort&compress]{natbib}
+%\usepackage{float}
+%\usepackage{algorithm}
+%\usepackage{algorithmicx}
+\makeatletter
+%\renewcommand*{\ALG@name}{Algorithmus}
+\makeatother
+\usepackage{algpseudocode}
+\algtext*{EndIf}
+\usepackage{lscape}
+\usepackage[absolute]{textpos}
+\setlength{\TPHorizModule}{1mm}
+\setlength{\TPVertModule}{\TPHorizModule}
+\textblockorigin{0mm}{0mm}
+\usepackage{parskip}
+\begingroup
+\expandafter\expandafter\expandafter\endgroup
+\expandafter\ifx\csname chapterformat\endcsname\relax\else
+    \renewcommand*{\chapterformat}{
+        \llap{
+            \chapappifchapterprefix{\ }\thechapter\autodot\enskip
+        }
+    }
+\fi
+\renewcommand*{\othersectionlevelsformat}[1]{
+    \llap{
+        \csname the#1\endcsname\autodot\enskip
+    }
+}
+\setlength{\unitlength}{1mm}
+\newlength{\grafikdim}
+\usepackage{listings}
+\usepackage{color}
+\renewcommand{\ttdefault}{pcr}
+\renewcommand{\lstlistingname}{Codeausschnitt}
+%JAVA
+\definecolor{darkblue}{rgb}{0,0,.6}
+\definecolor{darkred}{rgb}{.6,0,0}
+\definecolor{forestgreen}{RGB}{34,139,34}
+\definecolor{lgreen}{RGB}{50,201,50}
+\definecolor{red}{rgb}{.98,0,0}
+\definecolor{lbrown}{rgb}{0.54,0.27,0.01}
+\definecolor{purple}{rgb}{0.5,0,0.33}
+%XML
+\definecolor{forestgreen}{RGB}{34,139,34}
+\definecolor{orangered}{RGB}{239,134,64}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\lstdefinestyle{JAVA}{
+  language=JAVA,
+  captionpos=b, % Beschriftung ist unterhalb
+  basicstyle=\ttfamily\small, % Schriftart&Größe
+  commentstyle=\itshape\color{forestgreen},
+  keywordstyle=\bfseries\color{purple},
+  stringstyle=\color{blue},
+  showspaces=false,
+  showtabs=false,
+  columns=fixed,
+  frame=none,
+  breaklines=true,
+  showstringspaces=false,
+  frame=tb,
+	moredelim=[is][\itshape]{__}{__},
+	moredelim=[is][\textcolor{lbrown}]{~~}{~~},
+	moredelim=[is][\textcolor{blue}]{++}{++},
+	moredelim=[is][\itshape\bfseries\textcolor{darkblue}]{**}{**}
+}
+\lstdefinestyle{JAVA_LN}{
+  language=JAVA,
+  captionpos=b, % Beschriftung ist unterhalb
+  basicstyle=\ttfamily\small, % Schriftart&Größe
+  commentstyle=\itshape\color{forestgreen},
+  keywordstyle=\bfseries\color{purple},
+  stringstyle=\color{blue},
+  showspaces=false,
+  showtabs=false,
+  columns=fixed,
+  frame=none,
+  numbers=left, % Zeilennummern links vom Code
+  numberstyle=\tiny, % kleine Zeilennummern
+  numbersep=5pt,
+  breaklines=true,
+  showstringspaces=false,
+  xleftmargin=0.7cm,
+  frame=tb,
+	moredelim=[is][\itshape]{__}{__},
+	moredelim=[is][\textcolor{lbrown}]{~~}{~~},
+	moredelim=[is][\textcolor{blue}]{++}{++},
+	moredelim=[is][\itshape\bfseries\textcolor{darkblue}]{**}{**}
+}
+\lstdefinestyle{XML} {
+    language=XML,
+    captionpos=b, % Beschriftung ist unterhalb
+    basicstyle=\ttfamily\small,
+    columns=fullflexible,
+    commentstyle=\color{gray}\upshape,
+    %keywordstyle=\color{orangered},
+    stringstyle=\ttfamily\color{black}\normalfont,
+    tagstyle=\color{darkblue}\bfseries,
+    extendedchars=true, 
+    breaklines=true,
+    breakatwhitespace=true,
+    emph={},
+    emphstyle=\color{red},
+    morestring=[b]",
+    morecomment=[s]{<?}{?>},
+    morecomment=[s][\color{forestgreen}]{<!--}{-->},
+    morekeywords={attribute,xmlns,version,type,release},
+    frame=tb
+}
+\lstdefinestyle{XML_LN} {
+    language=XML,
+    captionpos=b, % Beschriftung ist unterhalb
+    basicstyle=\ttfamily\small,
+    columns=fullflexible,
+    commentstyle=\color{gray}\upshape,
+    %keywordstyle=\color{orangered},
+    stringstyle=\ttfamily\color{black}\normalfont,
+    tagstyle=\color{darkblue}\bfseries,
+    numbers=left, % Zeilennummern links vom Code
+  	numberstyle=\tiny, % kleine Zeilennummern
+  	numbersep=5pt,
+    extendedchars=true, 
+    breaklines=true,
+    breakatwhitespace=true,
+    emph={},
+    emphstyle=\color{red},
+    morestring=[b]",
+    morecomment=[s]{<?}{?>},
+    morecomment=[s][\color{forestgreen}]{<!--}{-->},
+    morekeywords={attribute,xmlns,version,type,release},
+    frame=tb
+}
+\lstdefinestyle{JSON} {
+    captionpos=b, % Beschriftung ist unterhalb
+    basicstyle=\small,
+    columns=fullflexible,
+    extendedchars=true, 
+    breaklines=true,
+    breakatwhitespace=true,
+    string=[s]{"}{"},
+    stringstyle=\color{darkblue}\ttfamily\bfseries,
+    comment=[l]{:},
+    commentstyle=\color{black}\ttfamily,
+		frame=tb
+}
+\usepackage[simplified]{pgf-umlcd}
+\renewcommand{\umltextcolor}{black}
+\renewcommand{\umlfillcolor}{white}
+\renewcommand{\umldrawcolor}{black}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{soul}
+\makeindex
+\usepackage{nomencl}
+\providecommand{\printnomenclature}{\printglossary}
+\providecommand{\makenomenclature}{\makeglossary}
+\makenomenclature
+\AfterFile{t1lmss.fd}{
+  \DeclareFontShape{T1}{lmss}{b}{n}
+  {<->ssub*lmss/bx/n}{}
+}
+\usepackage{textcomp}
+% Fehlerhaft bei mir. Teilweise werden Buchstaben in der PDF View in Eclipse
+% nicht angezeigt.
+%\usepackage[charter]{mathdesign}
+\usepackage{footmisc}
+\DeclareSymbolFont{cmsy}{OMS}{cmsy}{m}{n}
+\DeclareSymbolFontAlphabet{\mathcal}{cmsy}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+\onehalfspacing
+\pagestyle{headings}
+\newcommand*{\ORIGchapterheadendvskip}{}
+\let\ORIGchapterheadendvskip=\chapterheadendvskip
+\renewcommand*{\chapterheadendvskip}{
+    {
+        \setlength{\parskip}{0pt}
+        \noindent\rule{.3\textwidth}{3pt}\rule[2.5pt]{.7\linewidth}{.5pt}\par
+    }
+    \vskip1.2em
+}
+\makeatletter
+\providecommand{\toclevel@lstlisting}{0}
+\makeatother
+\addtokomafont{caption}{\small}
+\setkomafont{captionlabel}{\sffamily\bfseries}
+\setcapindent{1em}
+\renewcommand \theparagraph {(\arabic{paragraph})}
+\pagestyle{fancy}
+\usepackage{calc}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhf{}
+\fancyfoot[RO]{\rightmark\quad{\bfseries\thepage}}
+\fancyfoot[LE]{{\bfseries\thepage}\quad\leftmark}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[RO]{{\bfseries\thepage}}
+  \fancyfoot[LE]{{\bfseries\thepage}}
+  \renewcommand{\headrulewidth}{0pt}
+}
+\usepackage{booktabs}
+\usepackage{pifont}
+\setlength{\nomlabelwidth}{.20\hsize}
+\renewcommand{\nomlabel}[1]{#1 \dotfill}
+\hyphenation{name-space}
+\usepackage{array}
+\usepackage{bigstrut}
+\graphicspath{{../img/}}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\usepackage{bibgerm}
+
+\makeatother
+
+\begin{document}
+\pagenumbering{gobble}\include{titel}
+
+\cleardoublepage{}
+
+\include{erklaerung}
+
+\cleardoublepage{}
+
+\addtocontents{toc}{\protect\enlargethispage{2\normalbaselineskip}}
+
+\tableofcontents{}
+
+\listoffigures
+
+\thispagestyle{empty}
+%\cleartooddpage[\thispagestyle{empty}]
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\include{Einleitung}
+
+\include{Verwandtearbeiten}\include{Grundlagen}
+
+\include{Entwurf}
+
+\include{Implementierung}
+
+\include{Evaluierung}
+
+\include{Fazit}
+
+\bibliographystyle{gerplain}
+\bibliography{references}
+
+\end{document}
