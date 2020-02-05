@@ -1,0 +1,3 @@
+ipSubnet: 10.0.0.
+masterIp: "{{ ipSubnet }}102"
+ansible_user: pi

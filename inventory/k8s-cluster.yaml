@@ -1,8 +1,4 @@
 nodes:
-  vars:
-    ipSubnet: 10.0.0.
-    masterIp: "{{ ipSubnet }}102"
-    ansible_user: pi
   hosts:
     raspi1:
       ansible_host: "{{ ipSubnet }}101"
@@ -10,5 +6,3 @@ nodes:
       ansible_host: "{{ ipSubnet }}102"
     raspi3:
       ansible_host: "{{ ipSubnet }}103"
-    raspi4:
-      ansible_host: "{{ ipSubnet }}104"

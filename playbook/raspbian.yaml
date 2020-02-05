@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: all,localhost
   gather_facts: false
   vars:
     bootPartition: 5203-DB74
@@ -8,6 +8,8 @@
     psk: Kubern3tes
     ipHostnameOffset: 100
     inventoryFile: ../inventory/k8s-cluster.yaml
+    sshKeys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDclqjOCd8uXNLjNkG4lHx7FdfsUpo3cc6BkNPw9HLPH6kARI8S8d7/PEDeG3UZ+vB0wFmuV3xH7TMqoGP1sTV0cqHL9ep3pR35w20j74WaySlAGwHmNNMUaJxx0wUCKSQMr56ZML5xvK1ke5srJCvpDD8fEATLtfUyAYateQfHafVEDyf7ALhLk+57fi8eZaCeluQ9/0pHx0r/dxekxgbKUZbsvhjArMnnuYF0d2gzTYR1cBZuw3Xzl577lmLrK1Zy1jy1mBPPPTNaftantsV/TahjIGG5mAODvHlPqlCfneNy/U86kIpGzASfsS+FM3eLFnNuWCHXjA1fvVs0DqNF
   tasks:
 
     # Mount partitions
@@ -40,8 +42,12 @@
 
     - set_fact:
         newIp: "{{ (groups['nodes'] | map('extract', hostvars, ['ansible_host']) | list | sort | last).split('.') | last | int +1 }}"
-      delegate_to: localhost
-      run_once: yes
+      ignore_errors: yes
+      register: findIp
+
+    - set_fact:
+        newIp: "{{ ipHostnameOffset+1 }}"
+      when: findIp.failed
 
     - set_fact:
         newHostname: raspi{{ newIp|int - ipHostnameOffset }}
@@ -129,9 +135,17 @@
         - "    {{ newHostname }}:"
         - "      ansible_host: \"{{'{{'}} ipSubnet }}{{ newIp }}\""
 
-    # Add public ssh key
+    # Add public ssh keys
 
-
+    - name: Add public ssh keys
+      lineinfile:
+        path: /mnt/{{ rootfsPartition }}/home/{{ ansible_user }}/.ssh/authorized_keys
+        state: present
+        create: yes
+        line: "{{ item }}"
+      with_items: "{{ sshKeys }}"
+      delegate_to: localhost
+      run_once: yes
 
     # Unmount partitions
 
