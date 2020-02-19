@@ -2,8 +2,9 @@
 - hosts: all,localhost
   gather_facts: false
   vars:
-    bootPartition: 5203-DB74
-    rootfsPartition: 2ab3f8e1-7dc6-43f5-b0db-dd5759d51d4e
+    bootPartition: 4BBD-D3E7
+    rootfsPartition: 45e99191-771b-4e12-a526-0779148892cb
+    wifiCountry: DE
     ssid: K8s
     psk: Kubern3tes
     ipHostnameOffset: 100
@@ -23,6 +24,7 @@
         state: mounted
       delegate_to: localhost
       run_once: yes
+      tags: mount
 
     - name: Mount rootfs partitions
       mount:
@@ -32,6 +34,7 @@
         state: mounted
       delegate_to: localhost
       run_once: yes
+      tags: mount
 
     # Determine new IP and hostname
 
@@ -41,16 +44,19 @@
 #      delegate_to: localhost
 #      run_once: yes
 
-    - set_fact:
+    - name: Find max IP
+      set_fact:
         newIp: "{{ (groups['nodes'] | map('extract', hostvars, ['ansible_host']) | list | sort | last).split('.') | last | int +1 }}"
       ignore_errors: yes
       register: findIp
 
-    - set_fact:
+    - name: Find new IP
+      set_fact:
         newIp: "{{ ipHostnameOffset+1 }}"
       when: findIp.failed
 
-    - set_fact:
+    - name: Find new hostname
+      set_fact:
         newHostname: raspi{{ newIp|int - ipHostnameOffset }}
       delegate_to: localhost
       run_once: yes
@@ -72,10 +78,20 @@
         state: present
         line: "{{ item }}"
       with_items:
+        - "country={{ wifiCountry }}"
         - "network={"
         - "  ssid=\"{{ ssid }}\""
         - "  psk=\"{{ psk }}\""
         - "}"
+      delegate_to: localhost
+      run_once: yes
+
+    - name: Disable rfkill
+      lineinfile:
+        path: /mnt/{{ rootfsPartition }}/etc/rc.local
+        state: present
+        line: rfkill unblock wifi
+        insertbefore: exit 0
       delegate_to: localhost
       run_once: yes
 
@@ -85,6 +101,15 @@
         state: present
         line: "{{ newHostname }}"
         regexp: .*
+      delegate_to: localhost
+      run_once: yes
+
+    - name: Configure hostname
+      lineinfile:
+        path: /mnt/{{ rootfsPartition }}/etc/hosts
+        state: present
+        line: 127.0.1.1 {{ newHostname }}
+        regexp: 127.0.1.1.*
       delegate_to: localhost
       run_once: yes
 
@@ -98,6 +123,17 @@
         - static ip_address={{ ipSubnet }}{{ newIp }}/24
         - static routers={{ ipSubnet }}1
         - static domain_name_servers={{ ipSubnet }}1
+      delegate_to: localhost
+      run_once: yes
+
+    # Disable swap
+
+    - name: Disable swap
+      lineinfile:
+        path: /mnt/{{ rootfsPartition }}/etc/dphys-swapfile
+        state: present
+        regexp: ^CONF_SWAPSIZE=.*
+        line: CONF_SWAPSIZE=0
       delegate_to: localhost
       run_once: yes
 
@@ -159,3 +195,4 @@
         - "{{ bootPartition }}"
       delegate_to: localhost
       run_once: yes
+      tags: unmount
