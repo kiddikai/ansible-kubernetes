@@ -46,7 +46,7 @@
 
     - name: Find max IP
       set_fact:
-        newIp: "{{ (groups['nodes'] | map('extract', hostvars, ['ansible_host']) | list | sort | last).split('.') | last | int +1 }}"
+        newIp: "{{ (groups['nodes'] | map('extract', hostvars, ['ansible_host']) | list | sort | last).split('.') | last | int +1 }}" # find highest IP address in all inventory hosts, then add 1
       ignore_errors: yes
       register: findIp
 
