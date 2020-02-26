@@ -6,7 +6,13 @@
       set_fact: master=yes
       when: ansible_host == masterIp
 
-    # apt update, apt upgrade
+    # Set timezone
+
+    - name: Set timezone
+      timezone:
+        name: "{{ timezone }}"
+
+    # apt update && apt upgrade
 
     - name: Update and upgrade apt packages
       apt:
@@ -14,7 +20,7 @@
         update_cache: yes
         cache_valid_time: 1
 
-    # Docker
+    # Setup Docker
 
     - name: Check if Docker is installed
       command: which docker
@@ -124,6 +130,8 @@
     - name: Join the node to cluster
       command: sh /tmp/join-command.sh
       when: master is not defined
+
+    # Setup CNI
 
     - name: Install Flannel pod network
       become: false

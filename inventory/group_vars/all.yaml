@@ -1,4 +1,7 @@
 ipSubnet: 10.0.0.
-masterIp: "{{ ipSubnet }}102"
+masterIp: "{{ ipSubnet }}101"
+
 ansible_user: pi
 ansible_ssh_common_args: -o StrictHostKeyChecking=no
+
+timezone: Europe/Berlin
