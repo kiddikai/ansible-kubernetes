@@ -1,9 +1,18 @@
-\chapter{Einleitung}
-%TODO Stand der Dinge? Spezielle Voraussetzungen, warum Raspberry Pi, warum Raspbian
-\section{Motivation}
-\glqq Cluster supereinfach einrichten\grqq
+\chapter{Einleitung}\label{ch:einleitung}
 
-Ein Kubernetes-Cluster ist eine tolle Sache.
-Mit einigen Raspberry Pis lässt sich ein kostengünstiger Cluster einrichten.
-Es sind viele Schritte nötig, um einen Pi als Kubernetes-Node zu konfigurieren und je mehr Nodes eingerichtet werden sollen, umso häufiger müssen die immer gleichen Schritte durchgeführt werden.
-Mithilfe von Ansible können diese Aufwände automatisiert und somit spürbar vereinfacht und beschleunigt werden.
+Kubernetes ist eine moderne Technologie, die skalierbare Applikationen ermöglicht.
+Sie beruht auf dem Prinzip, mehrere Rechner miteinander zu vernetzen und ihre gesamten Ressourcen effizient zu nutzen.
+In Produktivumgebungen werden dazu leistungsstarke Maschinen oder Cloud-Instanzen eingesetzt.
+% TODO finanz nicht so wichtig, vorteile von lokal hervorheben, warum überhaupt cluster? fork computing, mobile edge computing
+Im Entwicklungsbetrieb kann es jedoch von Vorteil sein, aus finanziellen Gründen auf die Leistungsfähigkeit und die gute Anbindung eines Rechenzentrums zu verzichten und stattdessen auf lokal betriebene Systeme zu setzen.
+% TODO raspi verlinken
+Eine besonders günstige Option stellen hierbei Einplatinencomputer wie der Raspberry Pi dar.
+
+Es sind viele Schritte nötig, um einen Kubernetes-Cluster einzurichten und je mehr Nodes eingerichtet werden sollen, umso häufiger müssen die immer gleichen Schritte durchgeführt werden.
+Mithilfe des Automatisierungs-Werkzeugs Ansible können diese Aufwände automatisiert und somit vereinfacht und beschleunigt werden.
+Nachdem mit wenigen Handgriffen das Standardbetriebssystem Raspbian installiert wurde, werden alle weiteren Schritte von Ansible-Playbooks automatisch erledigt.
+
+In dieser Seminararbeit werden zunächst die verwendeten Technologien, Kubernetes und Ansible, kurz vorgestellt (Kapitel~\ref{ch:technologien}).
+Anschließend wird die Vorgehensweise zum Aufsetzen eines Clusters mithilfe der Playbooks übersichtlich zusammengefasst (Kapitel~\ref{ch:anwendung}).
+Danach erfolgt eine ausführliche Erläuterung der Funktionsweise der Playbooks (Kapitel~\ref{ch:umsetzung}).
+Zuletzt werden mögliche Alternativen zu den eingesetzten Technologien vorgestellt (Kapitel~\ref{ch:alternativen}) und ein Ausblick auf mögliche Weiterentwicklungen gegeben (Kapitel~\ref{ch:zusammenfassung}).
