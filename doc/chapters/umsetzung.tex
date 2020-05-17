@@ -1,47 +1,57 @@
 \chapter{Umsetzung}\label{ch:umsetzung}
 
-Um das Ziel der maximalen Automatisierung zu erreichen, werden so viele Arbeitsschritte wie möglich von Ansible-Playbooks übernommen.
+Um eine maximale Automatisierung zu erreichen, werden so viele Arbeitsschritte wie möglich von Ansible-Playbooks übernommen.
 Zwei relevante Playbooks übernehmen unterschiedliche Aufgaben und unterscheiden sich grundsätzlich in ihrer Funktionsweise:
-Bevor mit \texttt{kubernetes.yaml} die eigentliche Einrichtung des Clusters per gleichzeitigem Zugriff auf die Nodes via SSH vorgenommen werden kann, müssen die Systeme mit \texttt{local-raspbian.yaml} zunächst auf den Headless-Betrieb vorbereitet werden.
-Dies geschieht ausschließlich über lokale Aktionen mit direktem Zugriff auf das Dateisystem der SD-Karten.
+Bevor mit \texttt{kubernetes.yaml} die eigentliche Einrichtung des Clusters per gleichzeitigem Zugriff auf die Raspberry Pis via SSH vorgenommen werden kann, müssen die Systeme mit \texttt{local-raspbian.yaml} zunächst auf den Headless-Betrieb vorbereitet werden.
+Dies geschieht ausschließlich über lokale Aktionen mit direktem Zugriff auf das Dateisystem der SD-Karten vom Linux-Rechner aus.
 
-\section{Raspbian einrichten (\texttt{local-raspbian.yaml})}\label{sec:raspbian-einrichten}
-% TODO "Offline-Konfiguration"?
+\section{Raspbian einrichten}\label{sec:raspbian-einrichten}
 
-Das unveränderte Raspbian kann sich mangels Zugangsdaten (SSID und WPA-Key) nicht mit dem WiFi verbinden.
-Gewöhnlicherweise werden diese Daten nach dem ersten Start des Systems per Hand eingegeben.
-Da dieser Schritt aber auf jedem einzelnen Raspberry Pi durchgeführt werden muss und zudem das Anschließen eines Monitors und einer Tastatur erfordert, entsteht dabei ein nicht zu vernachlässigender Aufwand, der sich vermeiden lässt.
+Das originäre Raspbian kann sich mangels Zugangsdaten (SSID und WPA-Key) nicht mit dem WiFi verbinden.
+Gewöhnlicherweise werden diese Daten nach dem ersten Systemstart per Hand eingegeben.
+Da dieser Schritt auf jedem einzelnen Raspberry Pi durchgeführt werden müsste und das Anschließen eines Monitors und einer Tastatur erfordern würde, entsteht dabei ein Aufwand, der sich durch Automatisierung vermeiden lässt.
 
-Denn die WiFi-Konfiguration kann alternativ vorgenommen werden, indem die entsprechende Datei direkt auf der SD-Karte angepasst wird.
-Da die SD-Karte ohnehin zunächst einmal an einem separaten PC mit einem System-Image beschrieben werden muss, bietet sich dieser Zeitpunkt an, um weitere Konfigurationen vorzunehmen, bevor der Raspberry Pi gebootet wird.
+Die WiFi-Konfiguration kann alternativ vorgenommen werden, indem die entsprechende Konfigurationsdatei von Raspbian direkt auf der SD-Karte angepasst wird.
+Da die SD-Karte ohnehin zunächst einmal an einem separaten PC mit einem System-Image beschrieben werden muss, bietet sich dieser Zeitpunkt an, um weitere Konfigurationen vorzunehmen.
 Neben der Einrichtung des kabellosen Netzwerks können hier auch weitere Schritte erledigt werden, die in den folgenden Unterkapiteln näher beschrieben werden.
-Die Reihenfolge ist dabei irrelevant und kann - natürlich mit Ausnahme des Mountens und Unmountes der Partitionen - beliebig geändert werden.
+Die Reihenfolge kann dabei - mit Ausnahme des Mountens und Unmountens der Partitionen - beliebig geändert werden.
 
-Für diese Schritte gibt es ein eigenes Playbook.
-Da der Rasperry Pi zum Ausführungszeitpunkt dieses Playbooks nicht läuft, werden sämtliche Tasks darin nur auf dem Ansible-Host ausgeführt, nicht auf Remote-Hosts; und alle Aktionen erfolgen mittels direktem Eingriff ins Dateisystem, anstatt die Shell eines laufenden Systems anzusprechen.
+Für diese Schritte gibt es das Playbook \texttt{local-""raspbian"".yaml}.
+Da der Rasperry Pi zum Ausführungszeitpunkt dieses Playbooks nicht läuft, werden sämtliche enthaltenen Tasks auf dem Ansible-Host ausgeführt, nicht auf Remote-Hosts.
+Alle Aktionen erfolgen mittels direktem Zugriff auf das Dateisystem, anstatt ein laufendes System anzusprechen.
 Dadurch beschränken sich die nutzbaren Ansible-Module auf jene, die das Dateisystem betreffen.
-Das Playbook trägt das Namenspräfix \texttt{local-}, um diesen Umstand zu signalisieren.
 
 \subsection{Partitionen mounten}\label{subsec:partitionen-mounten}
 
-Ein Raspbian-System besteht aus zwei Partitionen: eine Hauptpartition (\texttt{rootfs}), deren Struktur der eines gewöhnlichen Linux-Systems entspricht und eine Boot-Partition, die dank ihres plattformübergreifend unterstützten FAT-Dateisystems leichten Zugriff auf häufig benötigte Einstellungen ermöglicht, ohne den Raspberry Pi erst booten zu müssen.
+Ein Raspbian-System besteht aus zwei Partitionen: eine Hauptpartition (\texttt{rootfs}) und eine Boot-Partition, die einen Zugriff auf häufig benötigte Einstellungen ermöglicht, ohne den Raspberry Pi erst starten zu müssen.
 Beide Partitionen tragen eine eindeutige UUID, über die sie im Playbook zunächst mithilfe des Ansible-Moduls \texttt{mount} gemountet werden.
 
 \subsection{Statische IP-Adresse setzen}\label{subsec:statische-ip-adresse-setzen}
 
 Standardmäßig werden IP-Adressen dynamisch über DHCP bezogen.
-Da das Ansprechen über Hostnamen vom Netzwerk abhängt und nicht immer zuverlässig funktioniert, wird stattdessen eine statische IP-Adresse vergeben.
+Da Kubernetes feste IP-Adressen voraussetzt, wird stattdessen eine statische IP-Adresse vergeben.
 Dafür wird das Ansible-Inventory ausgelesen, auf die höchste bisher vergebene IP-Adresse 1 addiert und die resultierende Adresse sowie die Adresse des Routers und die Subnetz-Maske in die Datei \texttt{/etc/""dhcpcd.conf} geschrieben.
 Hierfür kommt das Ansible-Module \texttt{lineinfile} zum Einsatz.
+
+\begin{lstlisting}[language=yaml, caption=Ansible-Inventory mit drei Hosts]
+nodes:
+  hosts:
+    raspi1:
+      ansible_host: "{{ ipSubnet }}101"
+    raspi2:
+      ansible_host: "{{ ipSubnet }}102"
+    raspi3:
+      ansible_host: "{{ ipSubnet }}103"
+\end{lstlisting}
 
 Zusätzlich wird in Abhängigkeit von der IP-Adresse ein sprechender Name als Hostname gewählt und dieser in den Dateien \texttt{/etc/""hostname} und \texttt{/etc/hosts} eingetragen.
 
 \subsection{SSH-Daemon aktivieren}\label{subsec:ssh-daemon-aktivieren}
 
-Aus Sicherheitsgründen ist der SSH-Dienst von Raspbian von Haus aus deaktiviert.
+Raspberry Pis werden oft für IoT-Projekte verwendet und dabei im Internet öffentlich zugänglich gemacht.
+Da auch das Standardpasswort oft nicht geändert wird, ist aus Sicherheitsgründen der SSH-Dienst in Raspbian von Haus aus deaktiviert.
 Er wird jedoch von Ansible benötigt.
-Da SSH ein häufig genutztes Feature ist, lässt sich der Daemon in Raspbian unkompliziert aktivieren.
-Dazu muss lediglich eine inhaltsleere Datei \texttt{ssh} auf der Boot-Partition angelegt werden.
+Der in Raspbian vorinstallierte Daemon lässt sich aktivieren, indem eine inhaltsleere Datei \texttt{ssh} auf der Boot-Partition angelegt wird.
 Ansible ermöglicht das Anlegen von Dateien mittels des \texttt{file}-Moduls und der Option \texttt{state: touch}.
 
 \subsection{WiFi konfigurieren}\label{subsec:wifi-konfigurieren}
@@ -50,14 +60,14 @@ Damit ein WiFi-Gerät wie der Raspberry Pi eine Verbindung mit einem Access Poin
 Raspbian liest diese Informationen aus der Datei \texttt{/etc/""wpa\_""supplicant/""wpa\_""supplicant"".conf}.
 Mithilfe von \texttt{lineinfile} wird der Inhalt der zu Beginn des Playbooks definierten Variablen \texttt{ssid} und \texttt{psk} dort hinterlegt.
 
-Zusätzlich wird das Land definiert, in dem das Gerät betrieben wird, damit das System die korrekten Frequenzbänder nutzt\footnote{\url{https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md}}.
-Ohne diese Konfiguration verweigert das WiFi-Modul den Dienst.
+Zusätzlich wird das Land definiert, in dem das Gerät betrieben wird, damit das System die korrekten Frequenzbänder nutzt\footnote{\url{https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md} -- \today}.
+Ohne diese Konfiguration ist das WiFi-Modul nicht betriebsfähig.
 Raspbian registriert den Eintrag in der Konfigurationsdatei jedoch nicht ohne Weiteres.
 Daher ist zusätzlich ein Eintrag in der Datei \texttt{/etc/""rc.""local} nötig, wodurch bei jedem Systemstart der Befehl \texttt{rfkill unblock wifi} ausgeführt und der WiFi-Adapter freigegeben wird.
 
 \subsection{Swapfile deaktivieren}\label{subsec:swapfile-deaktivieren}
 
-Kubernetes ist nicht zum Einsatz auf Systemen mit Swap-Speicher vorgesehen.
+Kubernetes ist aus Gründen der Performanz\footnote{\url{https://github.com/kubernetes/kubernetes/issues/7294} -- \today} nicht zum Einsatz auf Systemen mit Swap-Speicher vorgesehen.
 Findet der Dienst eine aktivierte Swap-Partition oder Swap-Datei, wird der Startvorgang mit einer Fehlermeldung abgebrochen.
 In Raspbian ist standardmäßig eine Swap-Datei aktiviert.
 Ihre Größe wird über einen Eintrag in der Konfigurationsdatei \texttt{/etc/""dphys-""swapfile} definiert.
@@ -65,23 +75,23 @@ Indem dort der Wert der Variable \texttt{CONF\_""SWAPSIZE} auf \texttt{0} gesetz
 
 \subsection{Control Groups aktivieren}\label{subsec:control-groups-aktivieren}
 
-Docker und Kubernetes greifen zur Verwaltung von Ressourcen auf Linux Control Groups (cgroups) zurück.
+Docker greift zur Verwaltung von Ressourcen auf Linux Control Groups (cgroups) zurück.
 Dieses Kernel-Feature ist in Raspbian standardmäßig deaktiviert.
-Um es zu aktivieren, werden in der Datei \texttt{cmdline.txt} auf der Boot-Partition die Kernel-Parameter \texttt{cgroup\_""enable=""cpuset ""cgroup\_""enable=""memory ""cgroup\_""memory=1} ergänzt.
+Um es zu aktivieren, werden in der Datei \texttt{cmdline.txt} auf der Boot-Partition mehrere Kernel-Parameter ergänzt.
 Dafür wird zunächst mithilfe eines regulären Ausdrucks im Modul \texttt{lineinfile} im Check-Mode sichergestellt, dass die Parameter noch nicht vorhanden sind.
 Gegebenenfalls werden sie anschließend, ebenfalls mit \texttt{lineinfile}, hinzugefügt.
 
 \subsection{SSH-Keys hinterlegen}\label{subsec:ssh-keys-hinterlegen}
 
-Die Authentifizierung per SSH-Schlüsselpaar kann aus verschiedenen Gründen eine attraktive Alternative zur klassischen Anmeldung mit Benutzernamen und Passwort darstellen.
+Eine Alternative zur Anmeldung mit Benutzernamen und Passwort ist die Authentifizierung per SSH-Schlüsselpaar.
 Unter anderem benötigt Ansible dadurch keine Passwörter, die manuell beim Ausführen eines Playbooks eingegeben oder im Inventory hinterlegt werden müssen.
 Damit ein SSH-Server einen Schlüssel akzeptiert, muss der zugehörige öffentliche Schlüssel im Home-Verzeichnis des Nutzers in der Datei \texttt{.ssh/""authorized\_""keys} eingetragen werden.
-Im Playbook wird dieser öffentliche Schlüssel zu Beginn als Variable definiert und nun in diese Datei geschrieben.
+Im Playbook wird dieser öffentliche Schlüssel zu Beginn als Variable definiert und mit diesem Task in die Datei geschrieben.
 
 \subsection{Partitionen unmounten}\label{subsec:partitionen-unmounten}
 
 Zum Schluss werden die zwei Partition ausgeworfen, sodass die Speicherkarte unmittelbar nach Ausführung des Playbooks sicher entfernt werden kann.
-Die Karte kann nun in den Pi eingelegt und dieser mit Strom versorgt und gebootet werden.
+Die Karte kann dann in den Raspberry Pi eingelegt und dieser mit Strom versorgt und gebootet werden.
 
 \section{Kubernetes-Cluster einrichten (\texttt{kubernetes.yaml})}
 
@@ -91,29 +101,20 @@ Diese Aufgabe übernimmt das Playbook \texttt{kubernetes"".yaml}, welches die n�
 \subsection{Master-Flag setzen}\label{subsec:master-flag-setzen}
 
 Zunächst wird in diesem Playbook ein Master-Flag gesetzt.
-Der Wert hängt von der Konfiguration der \texttt{masterIp} im Ansible-Inventory ab:
+Der Wert hängt von der Konfiguration der \texttt{masterIp} im Ansible-Inventory ab.
 Nur für den Host, auf dem später der Kubernetes-Master laufen soll, erhält das Flag den Wert \texttt{true}.
-Mithilfe des Flags können später einzelne Schritte exklusiv auf dem Master-Node bzw. auf allen anderen Nodes ausgeführt werden, beispielsweise das Initialisieren des Clusters.
-
-\subsection{Zeitzone korrigieren}\label{subsec:zeitzone-korrigieren}
-
-Raspbian befindet sich werksseitig nicht in der korrekten Zeitzone.
-Das Ansible-Modul \texttt{timezone} schafft mit dem Parameter \texttt{name: Europe/Berlin} Abhilfe.
-
-% TODO besser umschreiben, nicht befehle nennen
-\subsection{apt update \&\& apt upgrade}
-
-Mit dem Modul \texttt{apt} werden Software-Pakete auf den aktuellen Stand gebracht.
+Mithilfe des Flags werden später einzelne Schritte exklusiv auf dem Master-Node (beispielsweise das Initialisieren des Clusters) oder exklusiv auf den Worker-Nodes ausgeführt.
 
 \subsection{Docker installieren}\label{subsec:docker-installieren}
 
-Um eine unnötige Neuinstallation zu vermeiden, wird mit dem Systemaufruf \texttt{which ""docker} über das Modul \texttt{command} zunächst geprüft, ob Docker bereits installiert ist.
+Um eine unnötige Neuinstallation von Docker zu vermeiden, wird mit dem Systemaufruf \texttt{which ""docker} über das Modul \texttt{command} zunächst geprüft, ob Docker bereits installiert ist.
 Das Kommando \texttt{which} drückt über seinen Rückgabewert aus, wie viele seiner Argumente \emph{nicht} gefunden wurden.
-Ist Docker also noch nicht installiert, ist der Rückgabewert \texttt{1}.
-Jedoch werden Rückgabewerte ungleich \texttt{0} als Fehler interpretiert.
+Mit der Option \texttt{register: ""whichDocker} wird der Rückgabewert in einer Ansible-Variable registriert, um sie als Bedingung zur Ausführung weiterer Tasks verwenden zu können.
+Ist Docker noch nicht installiert, ist der Rückgabewert \texttt{1}.
+Rückgabewerte ungleich \texttt{0} werden jedoch von Ansible als Fehler interpretiert.
 Daher ist es nötig, Ansible mit der Option \texttt{ignore\_""errors: ""yes} anzuweisen, diesen vermeintlichen Fehler zu ignorieren.
 
-Docker stellt unter \url{https://get.docker.com} ein Installationsscript zur Verfügung, das mithilfe von \texttt{curl} heruntergeladen und in der lokalen Datei \texttt{get-""docker"".sh} gespeichert wird.
+Docker stellt ein Installationsscript\footnote{\url{https://get.docker.com} -- \today} zur Verfügung, das mithilfe von \texttt{curl} heruntergeladen und in der lokalen Datei \texttt{get-""docker"".sh} gespeichert wird.
 Anschließend wird das Script ausgeführt.
 Diese beiden Schritte werden durch die Bedingung \texttt{when: whichDocker.failed == true} übersprungen, falls Docker bereits installiert ist.
 
@@ -121,20 +122,21 @@ Zuletzt wird mit dem Modul \texttt{systemd} sichergestellt, dass der Docker-Daem
 
 \subsection{Kubernetes installieren}\label{subsec:kubernetes-installieren}
 
-Kubernetes wird über \texttt{apt} installiert.
-Die Pakete sind nicht über die offiziellen Apt-Repositorys verfügbar, daher wird zunächst mit den Ansible-Modulen \texttt{apt\_""key} und \texttt{apt\_""repository} das Kubernetes-Repository hinzugefügt.
+Kubernetes wird mit dem Paketverwalter \texttt{apt} des Betriebssystems installiert.
+Die Pakete sind nicht über die offiziellen Apt-Repositorys verfügbar.
+Daher wird zunächst mit den Ansible-Modulen \texttt{apt\_""key} und \texttt{apt\_""repository} das Kubernetes-Repository hinzugefügt.
 Anschließend werden die benötigten Pakete mittels \texttt{apt} heruntergeladen und installiert.
 Danach wird mit einem Aufruf des Kommandos \texttt{kubeadm init} der Cluster initialisiert.
-Dies geschieht ausschließlich auf dem Master-Node, indem durch \texttt{when: master is defined} eine Abhängigkeit vom Master-Flag geschaffen wird (vgl. Abschnitt~\ref{subsec:master-flag-setzen}).
+Dies geschieht ausschließlich auf dem Master-Node, indem durch \texttt{when: master is defined} eine Abhängigkeit vom Master-Flag geschaffen wird (siehe Abschnitt~\ref{subsec:master-flag-setzen}).
 Im Anschluss fordert \texttt{kubeadm} dazu auf, die generierte Konfigurationsdatei von \texttt{/etc/""kubernetes/""admin"".conf} ins Home-Verzeichnis zu kopieren.
 Diesen Schritt übernimmt Ansibles \texttt{copy}-Modul.
 Danach ist der Master-Node lauffähig.
 
 \subsection{Kubernetes-Nodes verbinden}\label{subsec:kubernetes-nodes-verbinden}
 
-Um die restlichen Knoten mit dem Master zu verbinden, kann der Master einen Join-Befehl generieren.
+Um die Worker-Nodes mit dem Master zu verbinden, generiert der Master einen Join-Befehl.
 Er enthält die IP-Adresse das Master-Nodes und einen zeitlich begrenzt gültigen Schlüssel.
-Wird er auf einem Kubernetes-Knoten ausgeführt, baut er mit dem Master eine sichere Verbindung auf, macht sich mit diesem bekannt und wird als Arbeiterknoten zum Cluster hinzugefügt.
+Wird er auf einem Kubernetes-Knoten ausgeführt, baut er mit dem Master eine sichere Verbindung auf, macht sich mit diesem bekannt und wird als Worker-Node zum Cluster hinzugefügt.
 
 Der Join-Befehl wird mit einem Aufruf von \texttt{kubeadm ""token ""create} auf dem Master-Knoten generiert.
 Die Ausgabe des Befehls -- also der Join-Befehl -- wird in der Ansible-Variable \texttt{join\_""command} registriert und in der lokalen Datei \texttt{/tmp/""join-""command} zwischengespeichert.
@@ -143,15 +145,17 @@ Anschließend sind alle Nodes dem Cluster beigetreten.
 
 \subsection{Virtuelles Netzwerk installieren}
 
-Kubernetes bringt kein eigenes virtuelles Netzwerk für die im Cluster laufenden Dienste mit.
+Kubernetes-Dienste, die auf unterschiedlichen Nodes laufen, sind voneinander isoliert zbd können unteinander nicht kommunizieren.
+Um dies zu ermöglichen, benötigt Kubernetes ein virtuelles Netzwerk.
 Es gibt unterschiedliche Implementierungen, die zusätzlich installiert werden können.
-Die hier gewählte Option heißt Flannel.
+Die hier gewählte Option heißt Flannel\footnote{\url{https://github.com/coreos/flannel} -- \today}.
 Die Installation erfolgt über den Befehl \texttt{kubectl apply} mit Angabe einer YAML-Datei, die zur Einrichtung benötigte Informationen enthält.
+Diese wird von den Flannel-Entwicklern bereitgestellt.
 Nach Abschluss der Installation ist der Cluster fertig eingerichtet und einsatzbereit.
 
 \section{Herausforderungen}
 
-In diesem Kapitel soll auf erwähnenswerte Schwierigkeiten eingegangen werden, die bei der Umsetzung auftraten und auch in Zukunft noch relevant sein könnten.
+In diesem Kapitel soll auf Schwierigkeiten eingegangen werden, die bei der Umsetzung auftraten und auch in Zukunft noch relevant sein könnten.
 
 \subsection{Update von Raspbian}
 
@@ -170,11 +174,5 @@ Es ist zu erwarten, dass dieser Schritt mit jedem neuen Raspbian-Release notwend
 
 Weiterhin kam nach dem Update keine WiFi-Verbindung mehr zustande.
 Die Ursache war die fehlende Definition des Landes in der Konfigurationsdatei \texttt{wpa\_supplicant"".conf}.
-Mit der alten Version war dies in Ordnung, erst die neue setzte die Konfiguration voraus.
-Es reichte zudem nicht aus, das Land festzulegen, sondern es musste auch die in Abschnitt~\ref{subsec:wifi-konfigurieren} beschriebene Lösung mit \texttt{rfkill} eingeführt werden, um das neue Raspbian wieder kabellos ins Netz zu bringen.
-
-\subsection{Veraltetes Kubernetes-Paket}
-
-Das installierte Kubernetes-Paket ist für die Ubuntu-Version Xenial Xerus, also 16.04 ausgelegt.
-Obwohl diese bereits vier Jahre alt ist, gibt es noch kein aktuelleres Release.
-Das stellt (bisher) kein Hindernis dar, sollte aber zumindest erwähnt werden.
+Mit der alten Version war dies noch nicht erforderlich, erst die neue setzte die Konfiguration voraus.
+Es reichte zudem nicht aus, das Land festzulegen, sondern es musste auch die in Abschnitt~\ref{subsec:wifi-konfigurieren} beschriebene Lösung mit \texttt{rfkill} eingeführt werden, um das neue Raspbian wieder mit dem WiFi-Netzwerk zu verbinden.

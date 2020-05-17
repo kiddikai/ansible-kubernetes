@@ -1,51 +1,52 @@
 \chapter{Anwendung}\label{ch:anwendung}
 
-Um mithilfe der Playbooks aus diesem Projekt einen Kubernetes-Cluster einzurichten, müssen Material und Infrastruktur vorbereitet werden.
-Anschließend werden die SD-Karten einzeln mit Raspbian beschrieben und mit dem Playbook \texttt{local-""raspbian.yaml} für den Headless-Betrieb konfiguriert.
+Um mithilfe der Playbooks aus diesem Projekt einen Kubernetes-Cluster einzurichten, müssen zunächst die WiFi-Infrastruktur und die Raspberry Pis vorbereitet werden.
+Dazu werden die SD-Karten einzeln mit Raspbian beschrieben und mit dem Playbook \texttt{local-""raspbian.yaml} für den Headless-Betrieb\footnote{Betrieb ohne Bildschirm} konfiguriert, mit Strom versorgt und gestartet.
 Sobald alle Raspberry Pis online sind, wird Kubernetes mit dem Playbook \texttt{kubernetes.yaml} aufgesetzt.
 
-% https://www.draw.io/?title=ansible-kubernetes-anwendung#R7Vlbm5owEP01PNpPiIo%2BVte91K11a%2FfWtygRsgZiQ%2FCyv75BgoDZVbxrv774kWESnDNzToaggYY7vWFw5HynFiKaUbSmGrjSDKNimuI3NMwiA6gUI4PNsBWZ9MTQxe9IGmO3AFvIzzhySgnHo6yxTz0P9XnGBhmjk6zbgJLsU0fQRoqh24dEtT5jizuRtWqYif0WYduJn6xXatEdF8bOMhLfgRadpEygqYEGo5RHV%2B60gUiIXYzL893smdwPKzffHvw%2F8LHe%2BtV%2BKkSLXW8yZRECQx7feukfrz58%2FPowfLdNd6xXS7Wnh5eCjHUMSSDxkrHyWQwgsgSeckgZd6hNPUiaibXOaOBZKHxMUYwSn3tKR8KoC%2BMb4nwmiwMGnAqTw10i7%2BaMT%2BLg04D10YqggCwzyGzEV%2FhVI78wwFStSPRuEHURZzPhwBCBHI%2BzBQVlXdoLvwR7cSHh3yAVQEnFT%2BiPehh6YdkT6DvIU5KTQB%2FiOHEwR90RnKMzEXTeBeYxYhxNVwIT35UEkQqhAzmeJHzTYx8nxbXYb%2F9QglNUMZpi%2FhJO%2F1KWo9fUnaupXHk%2BmMUDT8SbmhQOX9P3kmnzUTxvz4yp5mQMMM6KMlWFMh0CZz1Kh5pRISKQeo%2BJK5vPEYssAyoQE4SCEpDKnyAU8HpDYISRcC%2B20SQxx9MJFVtKgS0YGS0m%2FnW0XvYZyVNh4A%2B0BtDqDYddCn2rOelbPhR99dp%2F%2Bm5EXz3vjgfOir6Lxuq4ed4yZ9vUx2Z5Xps%2B%2FeP8ZStk2Grf3tV%2BD4zrojtp12%2Freku2hjvkWU7tUDxXz1g5SlnpWN7Qo4DkpHRrurROpZxZprS0TBSdssy85hbB7CA3aufVvSq0oNDPcGrYft1jL5gWOo0Qe%2BwRZF%2BIlps5pXwZ8f11YuVTSrmeImpC282kXD%2BulMcd1nopL52Vlsf%2FewWJOjhDn5BMolXjF0KlRbtzsrYIVBSIPYRV9I7ZK21DMD1NrxTbjkSw0m6b7ckIpr7svMHLE9fLyD0wzyv3JVVcsWeFjyIEzaXVF782muupCOxalVSHur3AXy%2BnkGDbE9d9Abl4HT6gvppZgc2rr9WD6aupoHyw44Rh0EPMQxz5%2F9RRAjCyOY0b%2B2PsmZ%2B%2F92SJI8jPVd0kBI98lBc5BZG8YOY%2BhDli4%2F4hcLoCXFOU1%2Fnhtlxxi1fSkyFnnLQhO9rhlXIGsb9d2lR36c9rdO%2BHGmb2MEI38p1GKOuA5YWWK%2B6T05H1xxpimHx1jNyTT7eg%2BRc%3D
-% TODO start und ende?
-\includegraphics[width=.7\textwidth]{img/anwendung.pdf}
+\begin{figure}[h]
+    % https://www.draw.io/?title=ansible-kubernetes-anwendung#R7Vlbd6IwEP41PuoBgoqPK73stt2trdt2%2B7QnSoTUQNgQqu6v3wBBwFhLd721Z33wkEkml2%2Fmm5lAA9j%2B%2FJzB0PtKHUQahubMG%2BCkYRidblf8J4JFJgAdLRO4DDuZSC8EQ%2FwbSWE%2BLMYOiioDOaWE47AqHNMgQGNekUHG6Kw6bEJJddUQukgRDMeQqNIH7HAvk1pGt5B%2FRtj18pX1Ti%2Fr8WE%2BWJ4k8qBDZyUROG0Am1HKsyd%2FbiOSYJfj8vBl8UCupp3zi5voF7zrX37%2Fdt%2FMJjt7i8ryCAwF%2FK%2Bnvn6M4N2nm%2Blvt%2Bs%2F65bZu7%2F50ZRnfYYklnjJs%2FJFDiByBJ6ySRn3qEsDSE4LaZ%2FROHBQsowmWsWYK0pDIdSF8AlxvpDOAWNOhcjjPpG9Nc8ncYhozMZow6GAdDPIXMQ3jLOycckBS74i0TtH1EecLcQAhgjk%2BLnqUFD6pbscV2AvHiT8bzAFUExxC6NwhGGQaAYRh4RgJCBSLFTgn4A58zBHwxCmEM0Ep%2F8F62fEOJpvRCfvNSVNZJzoyeasIJ2exwSvRLhcbft4gkO4Mppj%2FiNRb7Vl67HUczKXM6eNRd4IxHlLSknzsdxXqKWtXG%2FLtLFq0gYYR8UbS%2BHNgMDFiNJpw%2BgQcZD%2BiIknl6eIZZIJFYiJZAIlIJ1fcRLF%2B7bASHBMdH1Ds0KcqxMq8kqTLWmZTSZ2nc1XXaNYFcbRpGGDRt%2F23g199XZN%2FrZ3xV%2B995%2B%2Fb%2BKvXjfvgaPir64mvuFJ8xIKz00Tn%2Fi7wkE8bw7sZNM4IMh9LywCe0yC5On69IthfO1fxfZZ%2FMSjW%2FehaX7I%2Bs5QHX18ez%2B%2BnNoXZ5%2FC7sQ2m2LvI1kQH4uj59ve4OhpxYdYuqkBfnfuvrwqHSxpgI6CcYCwCt8%2BM0kpjxRZ5ZVMolfySJFW9pNJgFkzk%2BjHlUqAWgs%2BwUPaXv8b22vvw%2Fage1y2V1PdEAdOshQhKI2nUfI6ComLtIhv4mRnalD1qD%2BKo9cDKiTYDcTzWGAurgu7i7BAWynLawZYa1cFhZrDPkJBsXVXlqoDitOLprRm29JamviZJjBBx8qj5yJPii3NsNpd3cz%2BV6bPCClnXLHicov%2FwJ%2BuYtmd3aOnsShyAsRR9KHu0GZ7pRxq768aWktWXTHp8ZP1ADXHerLqRtWaq1bKoso2%2BLjWduqt%2BPhtVw60my5kr9cW5qFqi03bXn01X76oZVXFkQam1SqidmTaxnuJIbsdoMueb7oXJ95dYI1Ddr0GUdW7CcFhhKoIRR4Mk34UOEMOedI7wYTYlFCWqgEt%2FSVDOaNTtK7nBfjqIv8izG1r5e2PijJYAzLYFcg1wn8GUv5h1FgPtj93k0%2FDrQmhs7En%2FLyVevtP4wWP3hW%2BvX3BK5rFZ90soBffxsHpHw%3D%3D
+    \centering
+    \includegraphics[width=\textwidth]{img/anwendung.pdf}
+    \caption{Ablaufdiagramm zur Einrichtung eines Clusters}
+\end{figure}
 
 \section{Vorbereitung}\label{sec:vorbereitung}
 Zum erfolgreichen Ausführen dieser Anleitung müssen folgende Voraussetzungen erfüllt sein:
 
-% TODO lieber absätze
-\begin{itemize}
-    \item \textbf{Raspberry Pis} in beliebiger Anzahl und ebenso viele Speicherkarten und Netzteile stehen bereit.
-    \item \textbf{Ein Linux-Rechner} steht bereit, um die Speicherkarten zu flashen und die Ansible-Playbooks auszuführen. Dafür sind Balena Etcher\footnote{\url{https://www.balena.io/etcher/} -- \today} und Ansible\footnote{\url{https://www.ansible.com/} -- \today} installiert, das Git-Repo zu diesem Projekt mit den Verzeichnissen \texttt{inventory} und \texttt{playbook} ist ausgecheckt und ein Image von Raspbian Lite\footnote{\url{https://downloads.raspberrypi.org} -- \today} ist heruntergeladen.
-    % https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip
-    \item \textbf{Ein Terminal} mit \texttt{playbook} als Current Working Directory ist geöffnet.
-    \item \textbf{Ein WiFi-Access Point} mit Internetzugriff ist in Betrieb. Seine Einstellungen (IP, SSID, WPA2-Key) entsprechen den Angaben in den Dateien \texttt{inventory/""group\_vars/""all.yaml} und \texttt{playbook/""local-""raspbian.yaml}. Der zuvor erwähnte Rechner ist mit dem Access Point verbunden.
-    \item \textbf{Die Inventory-Datei} \texttt{inventory/""k8s-cluster.yaml} bildet den derzeitigen Cluster ab -- enthält also keine Einträge unter \texttt{hosts}, falls ein neuer Cluster eingerichtet werden soll:
+\textbf{Raspberry Pis} in beliebiger Anzahl und ebenso viele Speicherkarten und Netzteile stehen bereit.
 
-        \begin{lstlisting}
+\textbf{Ein Linux-Rechner} steht bereit, um die Speicherkarten zu beschreiben und die Ansible-Playbooks auszuführen. Dafür sind Balena Etcher\footnote{\url{https://www.balena.io/etcher/} -- \today} und Ansible\footnote{\url{https://www.ansible.com/} -- \today} installiert, das Git-Repository zu diesem Projekt mit den Verzeichnissen \texttt{inventory} und \texttt{playbook} ist lokal verfügbar und auf dem aktuellen Stand und ein Image von Raspbian Lite\footnote{\url{https://downloads.raspberrypi.org} -- \today} ist heruntergeladen.
+% https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip
+
+\textbf{Ein Terminal} mit \texttt{playbook} als Arbeitsverzeichnis ist geöffnet.
+
+\textbf{Ein WiFi-Access Point} mit Internetzugriff ist in Betrieb. Seine Einstellungen (IP, SSID, WPA2-Key) entsprechen den Angaben in den Dateien \texttt{inventory/""group\_vars/""all.yaml} und \texttt{playbook/""local-""raspbian.yaml}. Der zuvor erwähnte Linux-Rechner ist mit dem Access Point verbunden.
+
+\textbf{Die Inventory-Datei} \texttt{inventory/""k8s-cluster.yaml} bildet den derzeitigen Cluster ab -- enthält also keine Einträge unter \texttt{hosts}, falls ein neuer Cluster eingerichtet werden soll:
+
+\begin{lstlisting}[language=yaml, caption=Leere Inventory-Datei]
 nodes:
   hosts:
-        \end{lstlisting}
-        \caption{Leere Inventory-Datei}
-\end{itemize}
+\end{lstlisting}
 
-Die benötigte Zeit für die gesamte Einrichtung beträgt ca. 10 Minuten pro Raspberry Pi plus ca. 30 Minuten für den gesamten Cluster.
+\textbf{Ein SSH-Schlüsselpaar} ist generiert. Der private Schlüssel ist auf dem Linux-PC unter \texttt{\$HOME/"".ssh} hinterlegt und der öffentliche Schlüssel im Playbook \texttt{local-""raspbian"".yaml} in dem Array \texttt{sshKeys}.
 
-\section{Raspbian installieren}\label{sec:raspbian-installieren}
-Die Schritte in diesem Abschnitt müssen für jeden Raspberry Pi einzeln durchgeführt werden.
+\section{Raspbian installieren und Cluster einrichten}\label{sec:raspbian-installieren}
+Die folgenden Schritte müssen für jeden Raspberry Pi einzeln durchgeführt werden.
 
 \begin{enumerate}
     \item Speicherkarte in den Linux-Rechner einlegen.
-    \item Raspbian-Image mit Balena Etcher auf die Speicherkarte flashen.
+    \item Raspbian-Image mit Balena Etcher auf der Speicherkarte installieren.
     \item Raspbian-Playbook ausführen:
         \begin{lstlisting}
-ansible-playbook -i ../inventory/k8s-cluster.yaml local-raspbian.yaml
-        \end{lstlisting}
-        \caption{CLI-Befehl zur Ausführung des Raspbian-Playbooks}
-    \item Speicherkarte in den Raspberry Pi einsetzen und booten.
+sudo ansible-playbook -i ../inventory/k8s-cluster.yaml local-raspbian.yaml
+\end{lstlisting}
+    \item Speicherkarte in den Raspberry Pi einsetzen und starten.
 \end{enumerate}
 
-\section{Cluster aufsetzen}\label{sec:cluster-aufsetzen}
-
 Wenn alle Raspberry Pis gestartet sind, wird die Installation mit dem Kubernetes-Playbook fortgesetzt:
+
 \begin{lstlisting}
 ansible-playbook -i ../inventory/k8s-cluster.yaml kubernetes.yaml
 \end{lstlisting}
@@ -55,5 +56,5 @@ Der Kubernetes-Cluster ist anschließend einsatzbereit.
 
 \section{Weitere Nodes hinzufügen}\label{sec:weitere-nodes-hinzufügen}
 
-Sollen zu einem fertigen Cluster weitere Nodes hinzugefügt werden, kann auch dafür diese Anleitung verwendet werden.
+Sollen zu einem fertigen Cluster weitere Nodes hinzugefügt werden, kann auch dafür diese Anleitung ab Abschnitt~\ref{sec:vorbereitung} verwendet werden.
 Die Inventory-Datei darf dann nicht leer sein, sondern muss die bereits vorhandenen Nodes enthalten.

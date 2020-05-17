@@ -27,6 +27,7 @@
       register: whichDocker
       ignore_errors: yes
 
+    # TODO isn't there an ansible module for calling curl?
     - name: Get Docker install script
       command:
         cmd: curl -fsSL get.docker.com -o get-docker.sh
@@ -43,18 +44,19 @@
         state: started
 
     # Disable swap
+    # TODO supposed to be obsolete - is it?
 
-    - name: Remove swapfile from /etc/fstab
-      mount:
-        name: "{{ item }}"
-        fstype: swap
-        state: absent
-      with_items:
-        - swap
-        - none
-
-    - name: Disable swap
-      command: swapoff -a
+#    - name: Remove swapfile from /etc/fstab
+#      mount:
+#        name: "{{ item }}"
+#        fstype: swap
+#        state: absent
+#      with_items:
+#        - swap
+#        - none
+#
+#    - name: Disable swap
+#      command: swapoff -a
 
     # Setup Kubernetes
 
@@ -65,7 +67,7 @@
 
     - name: Adding apt repository for Kubernetes
       apt_repository:
-        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main # TODO move dist identifier "xenial" to a config entry
         state: present
         filename: kubernetes.list
 
@@ -86,9 +88,11 @@
         daemon_reload: yes
         state: restarted
 
+    # TODO why?
     - name: Reset Kubernetes cluster
       command: kubeadm reset -f
 
+    # TODO not idempotent
     - name: Initialize the Kubernetes cluster using kubeadm
       command: kubeadm init --pod-network-cidr=192.168.0.0/16
       when: master is defined

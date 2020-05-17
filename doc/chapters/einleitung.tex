@@ -1,14 +1,14 @@
 \chapter{Einleitung}\label{ch:einleitung}
 
+Dienste von IoT-Projekten stellen hohe Anforderungen an die Infrastruktur, auf der sie laufen.
+Große Datenmengen, geringe Latenzen oder Hochverfügbarkeit sind Herausforderungen, die sich nicht oder nur kostenintensiv mit klassischem Hosting im Internet oder in der Cloud bewältigen lassen.
+Eine Alternative stellt der Betrieb der Dienste in einem lokalen Netz dar.
+
 Kubernetes ist eine moderne Technologie, die skalierbare Applikationen ermöglicht.
 Sie beruht auf dem Prinzip, mehrere Rechner miteinander zu vernetzen und ihre gesamten Ressourcen effizient zu nutzen.
-In Produktivumgebungen werden dazu leistungsstarke Maschinen oder Cloud-Instanzen eingesetzt.
-% TODO finanz nicht so wichtig, vorteile von lokal hervorheben, warum überhaupt cluster? fork computing, mobile edge computing
-Im Entwicklungsbetrieb kann es jedoch von Vorteil sein, aus finanziellen Gründen auf die Leistungsfähigkeit und die gute Anbindung eines Rechenzentrums zu verzichten und stattdessen auf lokal betriebene Systeme zu setzen.
-% TODO raspi verlinken
-Eine besonders günstige Option stellen hierbei Einplatinencomputer wie der Raspberry Pi dar.
+Eine besonders günstige Option stellen hierbei Einplatinencomputer wie der Raspberry Pi\footnote{\url{https://www.raspberrypi.org} -- \today} dar.
 
-Es sind viele Schritte nötig, um einen Kubernetes-Cluster einzurichten und je mehr Nodes eingerichtet werden sollen, umso häufiger müssen die immer gleichen Schritte durchgeführt werden.
+Es sind viele Schritte nötig, um einen Kubernetes-Cluster einzurichten und je mehr Worker-Nodes eingerichtet werden sollen, umso häufiger müssen die immer gleichen Schritte durchgeführt werden.
 Mithilfe des Automatisierungs-Werkzeugs Ansible können diese Aufwände automatisiert und somit vereinfacht und beschleunigt werden.
 Nachdem mit wenigen Handgriffen das Standardbetriebssystem Raspbian installiert wurde, werden alle weiteren Schritte von Ansible-Playbooks automatisch erledigt.
 

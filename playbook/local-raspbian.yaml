@@ -38,11 +38,11 @@
 
     # Determine new IP and hostname
 
-#     this could be used in the future to make the playbook idempotent
-#    - set_fact:
-#        newHostname: "{{ lookup('file', '/mnt/' + rootfsPartition + '/etc/hostname') }}"
-#      delegate_to: localhost
-#      run_once: yes
+    #     this could be used in the future to make the playbook idempotent
+    #    - set_fact:
+    #        newHostname: "{{ lookup('file', '/mnt/' + rootfsPartition + '/etc/hostname') }}"
+    #      delegate_to: localhost
+    #      run_once: yes
 
     - name: Find max IP
       set_fact:
@@ -161,7 +161,9 @@
         backrefs: yes
       when: findCgroup.changed == false
 
-    - name: Update ansible inventory
+    # Update Ansible inventory
+
+    - name: Update Ansible inventory
       delegate_to: localhost
       run_once: yes
       lineinfile:

@@ -52,7 +52,7 @@ durchgeführt werden.
 
 3.  Raspbian-Playbook ausführen:
     
-        ansible-playbook -i ../inventory/k8s-cluster.yaml local-raspbian.yaml
+        sudo ansible-playbook -i ../inventory/k8s-cluster.yaml local-raspbian.yaml
 
 4.  Speicherkarte in den Raspberry Pi einsetzen und booten.
 
