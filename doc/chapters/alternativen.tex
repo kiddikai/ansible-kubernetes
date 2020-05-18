@@ -1,9 +1,18 @@
 \chapter{Alternativen}\label{ch:alternativen}
-\section{Ansible}\label{sec:ansible-alternativen}
-Puppet?
+\section{Alternativen zu Ansible}\label{sec:ansible-alternativen}
 
-Chef?
-\section{Kubernetes}\label{sec:kubernetes-alternativen}
+Ansible hat mehrere Konkurrenzprodukte, zum Beispiel Puppet und Chef.
+
+Alle sind etabliert und eignen sich zur Automatisierung von Konfigurationen über Netzwerkverbindungen.
+Ein wesentlicher Unterschied besteht in der grundlegenden Funktionsweise.
+Während Ansible genau dann arbeitet, wenn ein Playbook auf dem Steuerungsrechner ausgeführt wird (Push-Prinzip), setzen Puppet und Chef Agenten-Software auf den Remote-Hosts voraus, die selbst den Zeitpunkt der Konfiguration bestimmen Pull-Prinzip).
+Dafür muss dauerhaft ein Puppet- beziehunsgsweise Chef-Server bereitstehen, um zum gegebenen Zeitpunkt die nötigen Konfigurationen bereitzustellen.
+Puppet und Chef eignen sich dadurch eher für Anwendungsfälle, in denen Zeit keine wichtige Rolle spielt oder nicht alle Remote-Hosts gleichzeitig verfügbar sind, zum Beispiel Büro-Rechner, die für begrenzte Dauer und zu unterschiedlichen Zeiten verwendet werden.
+
+In diesem Projekt laufen alle Remote-Hosts gleichzeitig und eine unverzügliche Ausführung der Konfiguration auf Knopfdruck ist erwünscht.
+Das macht Ansible zu einer guten Wahl.
+
+\section{Alternativen zu Kubernetes}\label{sec:kubernetes-alternativen}
 Docker Swarm?
 
 Fleet?
