@@ -1,17 +1,19 @@
 \chapter{Technologien}\label{ch:technologien}
 
 In diesem Kapitel werden die eingesetzten Technologien vorgestellt.
+Nacheinander werden die Automatisierungs-Software Ansible, die Virtualisierungs-Software Docker sowie die Orchestrierungs-Software Kubernetes eingeführt.
+Im Kapitel~\ref{ch:umsetzung} wird anschließend beschrieben, wie sich ein Kubernetes-Cluster, der Docker-Container verteilt und redundant laufen lassen und skalieren kann, mithilfe von Ansible automatisiert aufsetzen lässt.
 
 \section{Ansible}\label{sec:ansible}
 
 Ansible ist eine Software zur Automation von IT-Prozessen und Konfigurationsverwaltung.
 
 Ein mit Ansible ausgerüsteter Steuer-Computer verbindet sich per SSH oder über andere Remote-Protokolle mit anderen Computern und führt auf ihnen Befehle aus, die einen Zielzustand herstellen sollen.
-Dieser Zielzustand wird in sogenannten Playbooks definiert.
+Dieser Zielzustand wird in sogenannten \emph{Playbooks} definiert.
 Dabei handelt es sich um Textdateien im YAML-Format.
 
-Sie bestehen im Wesentlichen aus einer Folge von Tasks, die auf vordefinierte Ansible-Module zurückgreifen oder explizit auszuführende Terminal-Befehle enthalten.
-Inventory-Dateien werden angelegt, um die zu verwaltende Infrastruktur zu beschreiben.
+Sie bestehen im Wesentlichen aus einer Folge von \emph{Tasks}, die auf vordefinierte Ansible-Module zurückgreifen oder explizit auszuführende Terminal-Befehle enthalten.
+\emph{Inventory}-Dateien werden angelegt, um die zu verwaltende Infrastruktur zu beschreiben.
 Dafür werden die zu steuernden Hosts aufgelistet und gegebenenfalls kategorisiert.
 Playbooks können bei der Ausführung dann auf einzelne Hosts oder bestimmte Gruppen beschränkt werden.
 
@@ -22,10 +24,10 @@ Insbesondere wird kein Ansible-eigener Agent oder ähnliches benötigt, sodass d
 
 Docker ermöglicht Virtualisierung von Software.
 
-In einem Docker-Container laufen Programme isoliert von den Ressourcen das Host-Systems.
+In einem \emph{Docker-Container} laufen Programme isoliert von den Ressourcen das Host-Systems.
 Neben Sicherheitsaspekten trägt dies auch zu einer erhöhten Portabilität von Anwendungen bei.
 Mehrere Dienste, ihre Konfiguration und Abhängigkeiten zu installierten Bibliotheken lassen sich bündeln und auf unterschiedlichen Host-Systemen reproduzierbar ausführen.
-Ein Container entsteht durch die Instanziierung eines Docker-Images.
+Ein Container entsteht durch die Instanziierung eines \emph{Docker-Images}.
 Diese sind vergleichbar mit einer Bauanleitung für das System, das im Container laufen soll.
 
 In öffentlichen Verzeichnissen wie Docker Hub stehen zahlreiche Images zur Verfügung, die als Grundlage für eigene, darauf aufbauende Images dienen.
@@ -34,8 +36,8 @@ In öffentlichen Verzeichnissen wie Docker Hub stehen zahlreiche Images zur Verf
 
 Kubernetes ermöglicht den ausfallsicheren Betrieb virtualisierter Anwendungen mit automatischer Skalierung.
 
-Ein Kubernetes-Cluster besteht aus mehreren, vernetzten Rechnern, die jeweils mit Docker oder einer vergleichbaren Virtualisierungssoftware ausgestattet sind.
-Neben einer beliebigen Anzahl an Worker-Nodes hat der Cluster eine Kontrollebene, die auf einem Master-Node läuft.
+Ein Kubernetes-Cluster besteht aus mehreren, vernetzten Rechnern (\emph{Nodes}), die jeweils mit Docker oder einer vergleichbaren Virtualisierungssoftware ausgestattet sind.
+Neben einer Vielzahl an \emph{Worker-Nodes} hat der Cluster eine Kontrollebene, die auf einem \emph{Master-Node} läuft.
 
 Diese Kontrollebene verwaltet die Worker-Nodes und alle darauf laufenden Dienste.
 Sie kann Dienste mit einer vorgegebenen Anzahl an Instanzen auf die Worker-Nodes verteilen, die Ausführung überwachen und bei Bedarf (beispielsweise bei einem Hardwareausfall) automatisch neue Instanzen hochfahren.

@@ -4,15 +4,15 @@ Dienste von IoT-Projekten stellen hohe Anforderungen an die Infrastruktur, auf d
 Große Datenmengen, geringe Latenzen oder Hochverfügbarkeit sind Herausforderungen, die sich nicht oder nur kostenintensiv mit klassischem Hosting im Internet oder in der Cloud bewältigen lassen.
 Eine Alternative stellt der Betrieb der Dienste in einem lokalen Netz dar.
 
-Kubernetes ist eine moderne Technologie, die skalierbare Applikationen ermöglicht.
+Kubernetes\footnote{\url{https://kubernetes.io/} -- \today} ist eine moderne Technologie, die skalierbare Applikationen ermöglicht.
 Sie beruht auf dem Prinzip, mehrere Rechner miteinander zu vernetzen und ihre gesamten Ressourcen effizient zu nutzen.
 Eine besonders günstige Option stellen hierbei Einplatinencomputer wie der Raspberry Pi\footnote{\url{https://www.raspberrypi.org} -- \today} dar.
 
 Es sind viele Schritte nötig, um einen Kubernetes-Cluster einzurichten und je mehr Worker-Nodes eingerichtet werden sollen, umso häufiger müssen die immer gleichen Schritte durchgeführt werden.
-Mithilfe des Automatisierungs-Werkzeugs Ansible können diese Aufwände automatisiert und somit vereinfacht und beschleunigt werden.
-Nachdem mit wenigen Handgriffen das Standardbetriebssystem Raspbian installiert wurde, werden alle weiteren Schritte von Ansible-Playbooks automatisch erledigt.
+Mithilfe des Automatisierungs-Werkzeugs Ansible\footnote{\url{https://www.ansible.com/} -- \today} können diese Aufwände automatisiert und somit vereinfacht und beschleunigt werden.
+Nachdem mit wenigen Handgriffen das Standardbetriebssystem Raspbian\footnote{\url{https://www.raspbian.org/} -- \today} installiert wurde, werden alle weiteren Schritte von Ansible-Playbooks automatisch erledigt.
 
 In dieser Seminararbeit werden zunächst die verwendeten Technologien, Kubernetes und Ansible, kurz vorgestellt (Kapitel~\ref{ch:technologien}).
 Anschließend wird die Vorgehensweise zum Aufsetzen eines Clusters mithilfe der Playbooks übersichtlich zusammengefasst (Kapitel~\ref{ch:anwendung}).
 Danach erfolgt eine ausführliche Erläuterung der Funktionsweise der Playbooks (Kapitel~\ref{ch:umsetzung}).
-Zuletzt werden mögliche Alternativen zu den eingesetzten Technologien vorgestellt (Kapitel~\ref{ch:alternativen}) und ein Ausblick auf mögliche Weiterentwicklungen gegeben (Kapitel~\ref{ch:zusammenfassung}).
+Zuletzt werden mögliche Alternativen zu den eingesetzten Technologien vorgestellt (Kapitel~\ref{ch:alternativen}) und ein Ausblick auf mögliche Weiterentwicklungen gegeben (Kapitel~\ref{ch:fazit}).

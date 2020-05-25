@@ -1,7 +1,7 @@
 \chapter{Alternativen}\label{ch:alternativen}
 \section{Alternativen zu Ansible}\label{sec:ansible-alternativen}
 
-Ansible hat mehrere Konkurrenzprodukte, zum Beispiel Puppet und Chef.
+Ansible hat mehrere Konkurrenzprodukte, zum Beispiel Puppet\footnote{\url{https://puppet.com/} -- \today} und Chef\footnote{\url{https://www.chef.io/} -- \today}.
 
 Alle sind etabliert und eignen sich zur Automatisierung von Konfigurationen über Netzwerkverbindungen.
 Ein wesentlicher Unterschied besteht in der grundlegenden Funktionsweise.
@@ -13,8 +13,16 @@ In diesem Projekt laufen alle Remote-Hosts gleichzeitig und eine unverzügliche 
 Das macht Ansible zu einer guten Wahl.
 
 \section{Alternativen zu Kubernetes}\label{sec:kubernetes-alternativen}
-Docker Swarm?
+Kubernetes ist die etablierteste Software zur Orchestrierung von Containern.\footnote{\url{https://platform9.com/blog/kubernetes-docker-swarm-compared/} -- \today}
+Eine der Alternativen heißt Docker Swarm\footnote{\url{https://docs.docker.com/engine/swarm/} -- \today} und ist Bestandteil von Docker.
+Die Funktionsumfänge beider Produkte sind ähnlich.
+Ausfallsicherheit durch Redundanz, Load Balancing, Skalierbarkeit, Monitoring und automatisiertes Ersetzen von fehlgeschlagenen Instanzen findet man auf beiden Seiten.
 
-Fleet?
+Die Handhabung von Docker Swarm ist an die von Docker angelehnt und leichter zu erlernen.
+Die Skalierung erfolgt bei Docker Swarm schneller, allerdings nur manuell.
+Kubernetes beherrscht automatisierte Skalierung anhand der Auslastung.
+Während Docker Swarm nur Docker-Container unterstützt, kann Kubernetes auch mit anderer Virtualisierungs-Software wie Podman betrieben werden.
 
-Ubuntu?
+Fleet war ein Cluster-Manager und Bestandteil von Container Linux (früher CoreOS).
+Die Technologie wird seit 2017 nicht mehr weiterentwickelt.
+In der Dokumentation wird stattdessen der Einsatz von Kubernetes empfohlen.\footnote{\url{https://coreos.com/fleet/docs/latest/} -- \today}

@@ -2,7 +2,7 @@
 
 Um eine maximale Automatisierung zu erreichen, werden so viele Arbeitsschritte wie möglich von Ansible-Playbooks übernommen.
 Zwei relevante Playbooks übernehmen unterschiedliche Aufgaben und unterscheiden sich grundsätzlich in ihrer Funktionsweise:
-Bevor mit \texttt{kubernetes.yaml} die eigentliche Einrichtung des Clusters per gleichzeitigem Zugriff auf die Raspberry Pis via SSH vorgenommen werden kann, müssen die Systeme mit \texttt{local-raspbian.yaml} zunächst auf den Headless-Betrieb vorbereitet werden.
+Bevor mit \texttt{kubernetes.yaml} die eigentliche Einrichtung des Clusters per gleichzeitigem Zugriff auf die Raspberry Pis via SSH vorgenommen werden kann, müssen die Systeme mit \texttt{local-raspbian.yaml} zunächst für den Headless-Betrieb vorbereitet werden.
 Dies geschieht ausschließlich über lokale Aktionen mit direktem Zugriff auf das Dateisystem der SD-Karten vom Linux-Rechner aus.
 
 \section{Raspbian einrichten}\label{sec:raspbian-einrichten}
@@ -12,11 +12,11 @@ Gewöhnlicherweise werden diese Daten nach dem ersten Systemstart per Hand einge
 Da dieser Schritt auf jedem einzelnen Raspberry Pi durchgeführt werden müsste und das Anschließen eines Monitors und einer Tastatur erfordern würde, entsteht dabei ein Aufwand, der sich durch Automatisierung vermeiden lässt.
 
 Die WiFi-Konfiguration kann alternativ vorgenommen werden, indem die entsprechende Konfigurationsdatei von Raspbian direkt auf der SD-Karte angepasst wird.
-Da die SD-Karte ohnehin zunächst einmal an einem separaten PC mit einem System-Image beschrieben werden muss, bietet sich dieser Zeitpunkt an, um weitere Konfigurationen vorzunehmen.
+Da die SD-Karte ohnehin zunächst an einem separaten PC mit einem System-Image beschrieben werden muss, bietet sich dieser Zeitpunkt an, um weitere Konfigurationen vorzunehmen.
 Neben der Einrichtung des kabellosen Netzwerks können hier auch weitere Schritte erledigt werden, die in den folgenden Unterkapiteln näher beschrieben werden.
 Die Reihenfolge kann dabei - mit Ausnahme des Mountens und Unmountens der Partitionen - beliebig geändert werden.
 
-Für diese Schritte gibt es das Playbook \texttt{local-""raspbian"".yaml}.
+Für diese Schritte wurde das Playbook \texttt{local-""raspbian"".yaml} entwickelt.
 Da der Rasperry Pi zum Ausführungszeitpunkt dieses Playbooks nicht läuft, werden sämtliche enthaltenen Tasks auf dem Ansible-Host ausgeführt, nicht auf Remote-Hosts.
 Alle Aktionen erfolgen mittels direktem Zugriff auf das Dateisystem, anstatt ein laufendes System anzusprechen.
 Dadurch beschränken sich die nutzbaren Ansible-Module auf jene, die das Dateisystem betreffen.
@@ -31,7 +31,7 @@ Beide Partitionen tragen eine eindeutige UUID, über die sie im Playbook zunäch
 Standardmäßig werden IP-Adressen dynamisch über DHCP bezogen.
 Da Kubernetes feste IP-Adressen voraussetzt, wird stattdessen eine statische IP-Adresse vergeben.
 Dafür wird das Ansible-Inventory ausgelesen, auf die höchste bisher vergebene IP-Adresse 1 addiert und die resultierende Adresse sowie die Adresse des Routers und die Subnetz-Maske in die Datei \texttt{/etc/""dhcpcd.conf} geschrieben.
-Hierfür kommt das Ansible-Module \texttt{lineinfile} zum Einsatz.
+Hierfür kommt das Ansible-Module \texttt{lineinfile} zum Einsatz (siehe Codausschnitt~\ref{lst:lineinfile}).
 
 \begin{lstlisting}[language=yaml, caption=Ansible-Inventory mit drei Hosts]
 nodes:
@@ -44,14 +44,27 @@ nodes:
       ansible_host: "{{ ipSubnet }}103"
 \end{lstlisting}
 
+\begin{lstlisting}[language=yaml, caption=Ansible-Task zur Einrichtung einer statischen IP-Adresse,label={lst:lineinfile}]
+- name: Configure static IP address
+  lineinfile:
+    path: /mnt/{{ rootfsPartition }}/etc/dhcpcd.conf
+    state: present
+    line: "{{ item }}"
+  with_items:
+    - interface wlan0
+    - static ip_address={{ ipSubnet }}{{ newIp }}/24
+    - static routers={{ ipSubnet }}1
+    - static domain_name_servers={{ ipSubnet }}1
+\end{lstlisting}
+
 Zusätzlich wird in Abhängigkeit von der IP-Adresse ein sprechender Name als Hostname gewählt und dieser in den Dateien \texttt{/etc/""hostname} und \texttt{/etc/hosts} eingetragen.
 
 \subsection{SSH-Daemon aktivieren}\label{subsec:ssh-daemon-aktivieren}
 
 Raspberry Pis werden oft für IoT-Projekte verwendet und dabei im Internet öffentlich zugänglich gemacht.
-Da auch das Standardpasswort oft nicht geändert wird, ist aus Sicherheitsgründen der SSH-Dienst in Raspbian von Haus aus deaktiviert.
+Da auch das Standardpasswort oft nicht geändert wird, ist aus Sicherheitsgründen der SSH-Dienst in Raspbian standardmäßig deaktiviert.
 Er wird jedoch von Ansible benötigt.
-Der in Raspbian vorinstallierte Daemon lässt sich aktivieren, indem eine inhaltsleere Datei \texttt{ssh} auf der Boot-Partition angelegt wird.
+Der in Raspbian vorinstallierte Daemon lässt sich aktivieren, indem eine inhaltsleere Datei mit dem Namen \texttt{ssh} auf der Boot-Partition angelegt wird.
 Ansible ermöglicht das Anlegen von Dateien mittels des \texttt{file}-Moduls und der Option \texttt{state: touch}.
 
 \subsection{WiFi konfigurieren}\label{subsec:wifi-konfigurieren}
@@ -83,7 +96,7 @@ Gegebenenfalls werden sie anschließend, ebenfalls mit \texttt{lineinfile}, hinz
 
 \subsection{SSH-Keys hinterlegen}\label{subsec:ssh-keys-hinterlegen}
 
-Eine Alternative zur Anmeldung mit Benutzernamen und Passwort ist die Authentifizierung per SSH-Schlüsselpaar.
+Eine Alternative zur standardmäßigen Anmeldung mit Benutzernamen und Passwort ist die Authentifizierung per SSH-Schlüsselpaar.
 Unter anderem benötigt Ansible dadurch keine Passwörter, die manuell beim Ausführen eines Playbooks eingegeben oder im Inventory hinterlegt werden müssen.
 Damit ein SSH-Server einen Schlüssel akzeptiert, muss der zugehörige öffentliche Schlüssel im Home-Verzeichnis des Nutzers in der Datei \texttt{.ssh/""authorized\_""keys} eingetragen werden.
 Im Playbook wird dieser öffentliche Schlüssel zu Beginn als Variable definiert und mit diesem Task in die Datei geschrieben.
@@ -91,9 +104,9 @@ Im Playbook wird dieser öffentliche Schlüssel zu Beginn als Variable definiert
 \subsection{Partitionen unmounten}\label{subsec:partitionen-unmounten}
 
 Zum Schluss werden die zwei Partition ausgeworfen, sodass die Speicherkarte unmittelbar nach Ausführung des Playbooks sicher entfernt werden kann.
-Die Karte kann dann in den Raspberry Pi eingelegt und dieser mit Strom versorgt und gebootet werden.
+Die Karte kann dann in den Raspberry Pi eingelegt, dieser mit Strom versorgt und gebootet werden.
 
-\section{Kubernetes-Cluster einrichten (\texttt{kubernetes.yaml})}
+\section{Kubernetes-Cluster einrichten}
 
 Sobald alle einzurichtenden Nodes online sind, kann die Einrichtung des Clusters beginnen.
 Diese Aufgabe übernimmt das Playbook \texttt{kubernetes"".yaml}, welches die nötigen Schritte auf allen Nodes simultan ausführt.
@@ -116,7 +129,7 @@ Daher ist es nötig, Ansible mit der Option \texttt{ignore\_""errors: ""yes} anz
 
 Docker stellt ein Installationsscript\footnote{\url{https://get.docker.com} -- \today} zur Verfügung, das mithilfe von \texttt{curl} heruntergeladen und in der lokalen Datei \texttt{get-""docker"".sh} gespeichert wird.
 Anschließend wird das Script ausgeführt.
-Diese beiden Schritte werden durch die Bedingung \texttt{when: whichDocker.failed == true} übersprungen, falls Docker bereits installiert ist.
+Diese beiden Schritte werden durch die Bedingung \texttt{when: ""whichDocker"".failed ""== ""true} übersprungen, falls Docker bereits installiert ist.
 
 Zuletzt wird mit dem Modul \texttt{systemd} sichergestellt, dass der Docker-Daemon gestartet ist.
 
@@ -145,7 +158,7 @@ Anschließend sind alle Nodes dem Cluster beigetreten.
 
 \subsection{Virtuelles Netzwerk installieren}
 
-Kubernetes-Dienste, die auf unterschiedlichen Nodes laufen, sind voneinander isoliert zbd können unteinander nicht kommunizieren.
+Kubernetes-Dienste, die auf unterschiedlichen Nodes laufen, sind voneinander isoliert und können unteinander nicht kommunizieren.
 Um dies zu ermöglichen, benötigt Kubernetes ein virtuelles Netzwerk.
 Es gibt unterschiedliche Implementierungen, die zusätzlich installiert werden können.
 Die hier gewählte Option heißt Flannel\footnote{\url{https://github.com/coreos/flannel} -- \today}.

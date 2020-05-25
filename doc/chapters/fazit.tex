@@ -1,4 +1,15 @@
-\chapter{Zusammenfassung}\label{ch:zusammenfassung}
+\chapter{Fazit}\label{ch:fazit}
+
+Die für dieses Projekt entwickelten Playbooks ermöglichen es, mit wenigen Handgriffen in kurzer Zeit einen Kubernetes-Cluster einzurichten.
+Die benötigte Zeit für die gesamte Einrichtung beträgt circa 10 Minuten pro Raspberry Pi plus etwa 30 Minuten für die Einrichtung des Clusters.
+Der überwiegende Teil dieser Zeit ist Wartezeit.
+Der Einrichtungsvorgang läuft fast komplett selbstständig ab.
+Eine manuelle Einrichtung des Clusters nimmt mehrere Stunden in Anspruch.
+
+Der Ersparnis von wenigen Stunden bei der Anwendung der Ansible-Playbooks muss aber auch der Aufwand gegenübergestellt werden, der nötig ist, um diese Playbooks zu entwickeln.
+In meinem Fall waren dafür weit über zehn Stunden nötig.
+Für die Einrichtung von wenigen oder nur einem Cluster lohnt es sich nicht, die Schritte zu automatisieren.
+Erst mit der häufigeren Nutzung der Playbooks, gegebenenfalls durch mehrere Nutzer, amortisieren sich die Aufwände.
 
 \section{Ausblick}\label{sec:ausblick}
 
@@ -11,8 +22,8 @@ Bislang wird zu Beginn der Einrichtung mit Balena Etcher ein separates Werkzeug 
 Erst danach wird Ansible zur weiteren Einrichtung verwendet.
 
 Es wäre auch möglich, im Ansible-Playbook \texttt{local-""raspbian"".yaml} mit einem Systemaufruf von \texttt{dd} das Raspbian-Abbild auf die Speicherkarte zu schreiben.
-Der vorhergehende Schritt mit Balena Etcher könnte dann entfallen.
-Ein Nachteil wäre, dass der Anwender selbst die Datenträgerbezeichnung (zum Beispiel \texttt{/dev/sdb}) selbst angeben müsste.
+Der vorhergehende Schritt mit Balena Etcher könnte dadurch ersetzt werden.
+Ein Nachteil wäre, dass der Anwender die Datenträgerbezeichnung (zum Beispiel \texttt{/dev/sdb}) selbst angeben müsste.
 
 \subsection{Bestehenden Kubernetes-Cluster erhalten}
 
@@ -29,10 +40,4 @@ Diese Vorgehensweise ist nicht optimal.
 Effizienter wäre es, den Befehl in einer Ansible-Variable zu registrieren und ihn dann direkt auf den Worker-Nodes auszuführen.
 Die Herausforderung dabei ist, dass Variablen in Ansible grundsätzlich nicht Host-übergreifend verwendet werden können.
 Ansible-Facts sollten es ermöglichen, diesen Umstand zu umgehen.
-Das hat aber zum Zeitpunkt der Umsetzung dieses Projekts nicht funktioniert.
-
-\section{Fazit}\label{sec:fazit}
-
-Die für dieses Projekt entwickelten Playbooks ermöglichen es, mit wenigen Handgriffen in kurzer Zeit einen Kubernetes-Cluster einzurichten.
-Die benötigte Zeit für die gesamte Einrichtung beträgt ca. 10 Minuten pro Raspberry Pi plus etwa 30 Minuten für den gesamten Cluster.
-
+Dies hat aber zum Zeitpunkt der Umsetzung dieses Projekts nicht funktioniert.

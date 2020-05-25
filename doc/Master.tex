@@ -250,6 +250,7 @@
 \newcolumntype{Y}{>{\centering\arraybackslash}X}
 \usepackage{bibgerm}
 \usepackage{graphicx}
+\counterwithout*{footnote}{chapter}
 
 \makeatother
 
@@ -267,26 +268,16 @@
 \setcounter{tocdepth}{1}
 \tableofcontents{}
 
-\listoffigures
-
 \thispagestyle{empty}
-%\cleartooddpage[\thispagestyle{empty}]
 \pagenumbering{arabic}
 \setcounter{page}{1}
-
-%\include{Einleitung}
-%\include{Verwandtearbeiten}\include{Grundlagen}
-%\include{Entwurf}
-%\include{Implementierung}
-%\include{Evaluierung}
-%\include{Fazit}
 
 \include{chapters/einleitung}
 \include{chapters/technologien}
 \include{chapters/anwendung}
 \include{chapters/umsetzung}
 \include{chapters/alternativen}
-\include{chapters/zusammenfassung}
+\include{chapters/fazit}
 
 \bibliographystyle{gerplain}
 \bibliography{references}
