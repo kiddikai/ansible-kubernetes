@@ -31,7 +31,7 @@ Beide Partitionen tragen eine eindeutige UUID, über die sie im Playbook zunäch
 Standardmäßig werden IP-Adressen dynamisch über DHCP bezogen.
 Da Kubernetes feste IP-Adressen voraussetzt, wird stattdessen eine statische IP-Adresse vergeben.
 Dafür wird das Ansible-Inventory ausgelesen, auf die höchste bisher vergebene IP-Adresse 1 addiert und die resultierende Adresse sowie die Adresse des Routers und die Subnetz-Maske in die Datei \texttt{/etc/""dhcpcd.conf} geschrieben.
-Hierfür kommt das Ansible-Module \texttt{lineinfile} zum Einsatz (siehe Codausschnitt~\ref{lst:lineinfile}).
+Hierfür kommt das Ansible-Module \texttt{lineinfile} zum Einsatz (siehe Codeausschnitt~\ref{lst:lineinfile}).
 
 \begin{lstlisting}[language=yaml, caption=Ansible-Inventory mit drei Hosts]
 nodes:

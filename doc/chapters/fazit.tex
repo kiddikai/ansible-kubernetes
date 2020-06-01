@@ -1,20 +1,30 @@
 \chapter{Fazit}\label{ch:fazit}
 
 Die für dieses Projekt entwickelten Playbooks ermöglichen es, mit wenigen Handgriffen in kurzer Zeit einen Kubernetes-Cluster einzurichten.
+In diesem Kapitel werden die Zeitaufwände für die manuelle und die mit Ansible automatisierte Einrichtung eines Clusters miteinander verglichen und Verbesserungspotenziale für die Arbeit identifiziert.
+
+\section{Evaluation}
+
 Die benötigte Zeit für die gesamte Einrichtung beträgt circa 10 Minuten pro Raspberry Pi plus etwa 30 Minuten für die Einrichtung des Clusters.
-Der überwiegende Teil dieser Zeit ist Wartezeit.
 Der Einrichtungsvorgang läuft fast komplett selbstständig ab.
-Eine manuelle Einrichtung des Clusters nimmt mehrere Stunden in Anspruch.
+Eine manuelle Einrichtung des Clusters würde mehrere Stunden in Anspruch nehmen.
+Die einzelnen Schritte würden mehr Zeit benötigen und die Parallelisierung der Einrichtung der Worker-Nodes wäre nicht mehr möglich.
+
+Pro Raspberry Pi wären etwa 20 Minuten für die Einrichtung nötig und zusätzliche 20 Minuten fielen für die Installation von Docker und Kubernetes sowie den Beitritt zum Cluster an.
+Die Initialisierung des Clusters würde außerdem einmalig 15 Minuten in Anspruch nehmen.
 
 Der Ersparnis von wenigen Stunden bei der Anwendung der Ansible-Playbooks muss aber auch der Aufwand gegenübergestellt werden, der nötig ist, um diese Playbooks zu entwickeln.
 In meinem Fall waren dafür weit über zehn Stunden nötig.
 Für die Einrichtung von wenigen oder nur einem Cluster lohnt es sich nicht, die Schritte zu automatisieren.
 Erst mit der häufigeren Nutzung der Playbooks, gegebenenfalls durch mehrere Nutzer, amortisieren sich die Aufwände.
 
+Ein weiterer Vorteil beim Einsatz von Ansible ergibt sich durch das Playbook-Format.
+Der Einrichtungsvorgang ist mit allen Einzelheiten automatisch nachvollziehbar dokumentiert.
+
 \section{Ausblick}\label{sec:ausblick}
 
 An verschiedenen Stellen bietet das Projekt Verbesserungspotenziale.
-Einige davon sollen nun erläutert werden.
+Einige davon werden nachfolgend erläutert.
 
 \subsection{Raspbian mit Ansible installieren}
 
