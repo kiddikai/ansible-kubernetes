@@ -98,7 +98,7 @@ Gegebenenfalls werden sie anschließend, ebenfalls mit \texttt{lineinfile}, hinz
 
 Eine Alternative zur standardmäßigen Anmeldung mit Benutzernamen und Passwort ist die Authentifizierung per SSH-Schlüsselpaar.
 Unter anderem benötigt Ansible dadurch keine Passwörter, die manuell beim Ausführen eines Playbooks eingegeben oder im Inventory hinterlegt werden müssen.
-Damit ein SSH-Server einen Schlüssel akzeptiert, muss der zugehörige öffentliche Schlüssel im Home-Verzeichnis des Nutzers in der Datei \texttt{.ssh/""authorized\_""keys} eingetragen werden.
+Damit ein SSH-Server einen Schlüssel akzeptiert, muss der zugehörige öffentliche Schlüssel im Homeverzeichnis des Nutzers in der Datei \texttt{.ssh/""authorized\_""keys} eingetragen werden.
 Im Playbook wird dieser öffentliche Schlüssel zu Beginn als Variable definiert und mit diesem Task in die Datei geschrieben.
 
 \subsection{Partitionen unmounten}\label{subsec:partitionen-unmounten}
@@ -141,7 +141,7 @@ Daher wird zunächst mit den Ansible-Modulen \texttt{apt\_""key} und \texttt{apt
 Anschließend werden die benötigten Pakete mittels \texttt{apt} heruntergeladen und installiert.
 Danach wird mit einem Aufruf des Kommandos \texttt{kubeadm init} der Cluster initialisiert.
 Dies geschieht ausschließlich auf dem Master-Node, indem durch \texttt{when: master is defined} eine Abhängigkeit vom Master-Flag geschaffen wird (siehe Abschnitt~\ref{subsec:master-flag-setzen}).
-Im Anschluss fordert \texttt{kubeadm} dazu auf, die generierte Konfigurationsdatei von \texttt{/etc/""kubernetes/""admin"".conf} ins Home-Verzeichnis zu kopieren.
+Im Anschluss fordert \texttt{kubeadm} dazu auf, die generierte Konfigurationsdatei von \texttt{/etc/""kubernetes/""admin"".conf} ins Homeverzeichnis zu kopieren.
 Diesen Schritt übernimmt Ansibles \texttt{copy}-Modul.
 Danach ist der Master-Node lauffähig.
 
@@ -158,7 +158,7 @@ Anschließend sind alle Nodes dem Cluster beigetreten.
 
 \subsection{Virtuelles Netzwerk installieren}
 
-Kubernetes-Dienste, die auf unterschiedlichen Nodes laufen, sind voneinander isoliert und können unteinander nicht kommunizieren.
+Kubernetes-Dienste, die auf unterschiedlichen Nodes laufen, sind voneinander isoliert und können untereinander nicht kommunizieren.
 Um dies zu ermöglichen, benötigt Kubernetes ein virtuelles Netzwerk.
 Es gibt unterschiedliche Implementierungen, die zusätzlich installiert werden können.
 Die hier gewählte Option heißt Flannel\footnote{\url{https://github.com/coreos/flannel} -- \today}.

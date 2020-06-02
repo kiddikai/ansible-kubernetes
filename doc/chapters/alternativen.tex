@@ -6,7 +6,7 @@ Ansible hat mehrere Konkurrenzprodukte, zum Beispiel Puppet\footnote{\url{https:
 Alle drei sind etabliert und eignen sich zur Automatisierung von Konfigurationen über Netzwerkverbindungen.
 Ein wesentlicher Unterschied besteht in der grundlegenden Funktionsweise.
 Während Ansible genau dann arbeitet, wenn ein Playbook auf dem Steuerungsrechner ausgeführt wird (Push-Prinzip), setzen Puppet und Chef Agenten-Software auf den Remote-Hosts voraus, die selbst den Zeitpunkt der Konfiguration bestimmen Pull-Prinzip).
-Dafür muss dauerhaft ein Puppet- beziehunsgsweise Chef-Server bereitstehen, um zum gegebenen Zeitpunkt die nötigen Konfigurationen bereitzustellen.
+Dafür muss dauerhaft ein Puppet- beziehungsweise Chef-Server bereitstehen, um zum gegebenen Zeitpunkt die nötigen Konfigurationen bereitzustellen.
 Puppet und Chef eignen sich dadurch eher für Anwendungsfälle, in denen eine zeitnahe Provisionierung nicht erforderlich ist oder nicht alle Remote-Hosts gleichzeitig verfügbar sind, zum Beispiel Büro-Rechner, die für begrenzte Dauer und zu unterschiedlichen Zeiten verwendet werden.
 
 In diesem Projekt laufen alle Remote-Hosts gleichzeitig und eine unverzügliche Ausführung der Konfiguration auf Knopfdruck ist erwünscht.
@@ -21,7 +21,7 @@ Ausfallsicherheit durch Redundanz, Load Balancing, Skalierbarkeit, Monitoring un
 Die Handhabung von Docker Swarm ist an die von Docker angelehnt und weniger komplex als Kubernetes.
 Die Skalierung erfolgt bei Docker Swarm schneller, allerdings nur manuell.\footnote{\url{https://platform9.com/blog/kubernetes-docker-swarm-compared/} -- \today}
 Kubernetes beherrscht automatisierte Skalierung anhand der Auslastung von Ressourcen wie CPU-Rechenleistung oder Arbeitsspeicher.
-Während Docker Swarm nur Docker-Container unterstützt, kann Kubernetes auch mit einer anderen Virtualisierungs-Software wie Podman betrieben werden.
+Während Docker Swarm nur Docker-Container unterstützt, kann Kubernetes auch mit einer anderen Virtualisierungssoftware wie Podman betrieben werden.
 
 Fleet war ein Cluster-Manager und Bestandteil von Container Linux (früher CoreOS).
 Die Technologie wird seit 2017 nicht mehr weiterentwickelt.

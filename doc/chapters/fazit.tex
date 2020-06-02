@@ -5,11 +5,11 @@ In diesem Kapitel werden die Zeitaufwände für die manuelle und die mit Ansible
 
 \section{Evaluation}
 
-Die benötigte Zeit für die gesamte Einrichtung beträgt circa 10 Minuten pro Raspberry Pi plus etwa 30 Minuten für die Einrichtung des Clusters.
+Die benötigte Zeit für die gesamte, automatisierte Einrichtung beträgt circa 10 Minuten pro Raspberry Pi plus etwa 30 Minuten für die Einrichtung des Clusters.
 Der Einrichtungsvorgang läuft fast komplett selbstständig ab.
+
 Eine manuelle Einrichtung des Clusters würde mehrere Stunden in Anspruch nehmen.
 Die einzelnen Schritte würden mehr Zeit benötigen und die Parallelisierung der Einrichtung der Worker-Nodes wäre nicht mehr möglich.
-
 Pro Raspberry Pi wären etwa 20 Minuten für die Einrichtung nötig und zusätzliche 20 Minuten fielen für die Installation von Docker und Kubernetes sowie den Beitritt zum Cluster an.
 Die Initialisierung des Clusters würde außerdem einmalig 15 Minuten in Anspruch nehmen.
 
@@ -19,7 +19,9 @@ Für die Einrichtung von wenigen oder nur einem Cluster lohnt es sich nicht, die
 Erst mit der häufigeren Nutzung der Playbooks, gegebenenfalls durch mehrere Nutzer, amortisieren sich die Aufwände.
 
 Ein weiterer Vorteil beim Einsatz von Ansible ergibt sich durch das Playbook-Format.
-Der Einrichtungsvorgang ist mit allen Einzelheiten automatisch nachvollziehbar dokumentiert.
+Der Einrichtungsvorgang ist dadurch mit allen Einzelschritten automatisch nachvollziehbar dokumentiert.
+Weiterhin werden durch die Automatisierung Flüchtigkeitsfehler ausgeschlossen, beispielsweise bei der Vergabe der statischen IP-Adressen.
+Bei einer manuellen Einrichtung könnte versehentlich dieselbe IP-Adresse mehrfach vergeben werden.
 
 \section{Ausblick}\label{sec:ausblick}
 
